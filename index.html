@@ -648,7 +648,10 @@ body{background:#020403;color:var(--text);font-size:16.5px}
 .fam-mods{font-size:9px;color:#a89470;line-height:1.7;margin-top:auto;padding-top:8px;border-top:1px solid rgba(201,168,106,.1)}
 .fam.sel{border-color:rgba(201,168,106,.72);box-shadow:0 0 0 1px rgba(201,168,106,.15) inset,0 10px 30px rgba(0,0,0,.5)}
 .fam.sel .fam-art{background:radial-gradient(70% 90% at 50% 30%,rgba(201,168,106,.24),transparent 70%),linear-gradient(160deg,rgba(42,60,48,.92),rgba(9,15,11,.96))}
-.cr-dots{display:flex;gap:7px;justify-content:center;margin:2px 0 14px}
+.fam-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 14px}
+.fam-arrow{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(201,168,106,.28);background:rgba(12,17,27,.55);color:var(--gold);font-size:16px;line-height:1;cursor:pointer;transition:.2s;padding-bottom:2px}
+.fam-arrow:hover{border-color:rgba(201,168,106,.7);background:rgba(201,168,106,.14)}
+.cr-dots{display:flex;gap:7px;justify-content:center}
 .cr-dots i{width:7px;height:7px;transform:rotate(45deg);border:1px solid rgba(201,168,106,.35);transition:.2s;cursor:pointer}
 .cr-dots i:hover{border-color:var(--gold);background:rgba(201,168,106,.35)}
 .cr-dots i.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(201,168,106,.4)}
@@ -870,7 +873,11 @@ body{background:#020403;color:var(--text);font-size:16.5px}
     <div class="create-scroll">
       <div class="create-name">以 <b id="crName">—</b> 之名，入宫待选</div>
       <div class="fam-list" id="famList"></div>
-      <div class="cr-dots" id="famDots"></div>
+      <div class="fam-nav">
+        <button class="fam-arrow" id="famPrev" aria-label="上一个身世">‹</button>
+        <div class="cr-dots" id="famDots"></div>
+        <button class="fam-arrow" id="famNext" aria-label="下一个身世">›</button>
+      </div>
       <div class="roll-panel">
         <div class="roll-head"><h3>根 骨 · 天 资</h3><button id="btnRoll" class="mini-btn">重掷 <i id="rollLeft">3</i></button></div>
         <div class="attr-list" id="attrList"></div>
@@ -1513,6 +1520,12 @@ function renderCreate(){
   $('famDots').querySelectorAll('[data-fam-dot]').forEach(d=>{
     d.onclick=()=>pickFam(d.dataset.famDot);
   });
+  const step=n=>{
+    const base=idx<0?0:(idx+n+FAMILIES.length)%FAMILIES.length;
+    pickFam(FAMILIES[base].id);
+  };
+  $('famPrev').onclick=()=>step(-1);
+  $('famNext').onclick=()=>step(1);
   const attrs=sel.attrs||rollAttrs(fam);
   $('attrList').innerHTML=ATTRS.map(([k,name])=>{
     const v=attrs[k];
