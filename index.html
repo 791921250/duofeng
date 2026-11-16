@@ -648,8 +648,9 @@ body{background:#020403;color:var(--text);font-size:16.5px}
 .fam-mods{font-size:9px;color:#a89470;line-height:1.7;margin-top:auto;padding-top:8px;border-top:1px solid rgba(201,168,106,.1)}
 .fam.sel{border-color:rgba(201,168,106,.72);box-shadow:0 0 0 1px rgba(201,168,106,.15) inset,0 10px 30px rgba(0,0,0,.5)}
 .fam.sel .fam-art{background:radial-gradient(70% 90% at 50% 30%,rgba(201,168,106,.24),transparent 70%),linear-gradient(160deg,rgba(42,60,48,.92),rgba(9,15,11,.96))}
-.cr-dots{display:flex;gap:6px;justify-content:center;margin:2px 0 14px}
-.cr-dots i{width:5px;height:5px;transform:rotate(45deg);border:1px solid rgba(201,168,106,.35);transition:.2s}
+.cr-dots{display:flex;gap:7px;justify-content:center;margin:2px 0 14px}
+.cr-dots i{width:7px;height:7px;transform:rotate(45deg);border:1px solid rgba(201,168,106,.35);transition:.2s;cursor:pointer}
+.cr-dots i:hover{border-color:var(--gold);background:rgba(201,168,106,.35)}
 .cr-dots i.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(201,168,106,.4)}
 .boot-bottom{margin-top:14px}
 
@@ -1478,6 +1479,13 @@ function rollAttrs(fam){
 function renderCreate(){
   const fam=FAMILIES.find(f=>f.id===sel.familyId)||FAMILIES[0];
   const idx=FAMILIES.findIndex(f=>f.id===sel.familyId);
+  const pickFam=id=>{
+    sel.familyId=id;
+    const f=FAMILIES.find(x=>x.id===id);
+    sel.attrs=rollAttrs(f);
+    sel.scheme=clamp(rnd(10,26)+Math.floor(sel.attrs.wit/22),8,42);
+    renderCreate();
+  };
   $('crName').textContent=($('nameInput').value||'待定').trim()||'待定';
   const rail=$('famList');
   if(rail.dataset.ready!=='1'){
@@ -1495,19 +1503,16 @@ function renderCreate(){
     </button>`).join('');
     rail.dataset.ready='1';
     rail.querySelectorAll('[data-fam]').forEach(b=>{
-      b.onclick=()=>{
-        sel.familyId=b.dataset.fam;
-        const f=FAMILIES.find(x=>x.id===sel.familyId);
-        sel.attrs=rollAttrs(f);
-        sel.scheme=clamp(rnd(10,26)+Math.floor(sel.attrs.wit/22),8,42);
-        renderCreate();
-      };
+      b.onclick=()=>pickFam(b.dataset.fam);
     });
   }
   /* 只切选中态，不重建图片节点，避免身世图闪回兜底 */
   rail.querySelectorAll('[data-fam]').forEach(b=>b.classList.toggle('sel',b.dataset.fam===sel.familyId));
   if(idx>=0)rail.scrollLeft=idx*(rail.clientWidth||0);
-  $('famDots').innerHTML=FAMILIES.map((f,i)=>`<i class="${i===idx?'on':''}"></i>`).join('');
+  $('famDots').innerHTML=FAMILIES.map((f,i)=>`<i class="${i===idx?'on':''}" data-fam-dot="${f.id}" title="${f.name}"></i>`).join('');
+  $('famDots').querySelectorAll('[data-fam-dot]').forEach(d=>{
+    d.onclick=()=>pickFam(d.dataset.famDot);
+  });
   const attrs=sel.attrs||rollAttrs(fam);
   $('attrList').innerHTML=ATTRS.map(([k,name])=>{
     const v=attrs[k];
