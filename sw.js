@@ -1,4 +1,4 @@
-const CACHE = 'df-v1';
+const CACHE = 'df-v2';
 const CORE = ['index.html', 'img/cdefcc2b1cc4.webp'];
 
 self.addEventListener('install', e => {
