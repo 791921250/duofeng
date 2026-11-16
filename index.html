@@ -1,0 +1,3812 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070505">
+<link rel="preload" as="image" href="img/cdefcc2b1cc4.webp" fetchpriority="high">
+<title>夺凤 · 六宫升位录</title>
+<style>
+/* =========================================================
+   夺凤 · 六宫升位录  —  单文件竖屏宫斗养成
+   ========================================================= */
+:root{
+  --ink:#070505;--ink2:#0d0908;--ink3:#141010;--ink4:#1b1512;
+  --gold:#c9a86a;--gold2:#f0dcae;--gold3:#7d6236;
+  --red:#8e2f2f;--red2:#c4544a;--red3:#5d1b22;
+  --jade:#8aab9b;--jade2:#cfe0d6;
+  --paper:#efe6d4;--text:#ddd3c4;--muted:#a19384;--dim:#6f6256;
+  --line:rgba(201,168,106,.18);--line2:rgba(201,168,106,.42);--line3:rgba(201,168,106,.09);
+  --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","SimSun",serif;
+  --sans:"PingFang SC","HarmonyOS Sans SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#020302;color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.7;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer;touch-action:manipulation}
+input{font-family:inherit;color:inherit;background:none;border:none;outline:none}
+img{display:block;max-width:100%}
+[hidden]{display:none!important}
+::selection{background:rgba(201,168,106,.3);color:#fff}
+::-webkit-scrollbar{width:0;height:0}
+
+#app{position:relative;width:100%;max-width:480px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:var(--ink)}
+@media(min-width:520px){
+  #app{box-shadow:0 0 0 1px rgba(201,168,106,.13),0 40px 140px rgba(0,0,0,.9)}
+}
+
+/* ---------- 氛围 ---------- */
+#ambient{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#ambient::before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(120% 55% at 50% -10%,rgba(142,47,47,.16),transparent 62%),
+    radial-gradient(90% 40% at 100% 108%,rgba(201,168,106,.07),transparent 70%),
+    linear-gradient(180deg,#0d0807 0%,#070505 58%,#050303 100%)}
+#petals{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;opacity:.6}
+.grain{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.055;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E")}
+
+/* ---------- 通用 ---------- */
+.screen{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column}
+.btn-main{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:54px;
+  border:1px solid rgba(201,168,106,.6);color:var(--gold2);font-size:18px;letter-spacing:.4em;text-indent:.4em;
+  background:linear-gradient(180deg,rgba(201,168,106,.14),rgba(201,168,106,.03) 55%,rgba(142,47,47,.18));
+  overflow:hidden;transition:transform .16s ease,box-shadow .3s ease;font-family:var(--serif)}
+.btn-main::before{content:"";position:absolute;top:0;left:-60%;width:32%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(240,220,174,.28),transparent);transform:skewX(-18deg);
+  animation:sheen 5.6s ease-in-out infinite}
+.btn-main:active{transform:scale(.985)}
+.btn-main:disabled{opacity:.32;pointer-events:none}
+.btn-main.ghost{border-color:var(--line);background:rgba(255,255,255,.015);color:var(--muted);letter-spacing:.28em}
+@keyframes sheen{0%,72%{left:-60%}86%,100%{left:130%}}
+.serif{font-family:var(--serif)}
+.gold{color:var(--gold2)}
+.hair{height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent)}
+.toast{position:absolute;left:50%;top:calc(env(safe-area-inset-top) + 84px);z-index:120;transform:translate(-50%,-10px);
+  padding:9px 18px;border:1px solid var(--line2);background:rgba(9,7,6,.96);color:var(--gold2);
+  font-size:14px;letter-spacing:.12em;white-space:nowrap;opacity:0;pointer-events:none;transition:.26s ease;
+  box-shadow:0 8px 30px rgba(0,0,0,.6);max-width:92%;overflow:hidden;text-overflow:ellipsis}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.icon-back{width:38px;height:38px;border:1px solid var(--line);color:var(--gold);font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.sub-head{display:flex;align-items:center;gap:13px;padding:calc(env(safe-area-inset-top) + 16px) 18px 12px;border-bottom:1px solid var(--line3)}
+.sub-head h2{font-family:var(--serif);font-size:21px;font-weight:500;letter-spacing:.24em;color:var(--gold2)}
+.sub-head p{font-size:12px;color:var(--dim);letter-spacing:.1em;margin-top:1px}
+
+/* ---------- 开场 ---------- */
+.boot{position:absolute;inset:0;z-index:20;overflow:hidden;background:#050404}
+.boot-art{position:absolute;inset:0;overflow:hidden;background:
+  radial-gradient(120% 60% at 50% 8%,#1b1210 0%,#100b0a 38%,#070505 72%)}
+.boot-art .moon{position:absolute;top:7%;right:6%;width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 42% 38%,#ffeec8,#e8c896 55%,#b98f58);
+  box-shadow:0 0 54px rgba(240,220,174,.28),0 0 120px rgba(240,220,174,.1);opacity:.86}
+.boot-art .moon::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 70% 72%,rgba(0,0,0,.14),transparent 60%)}
+.palace{position:absolute;left:0;right:0;bottom:0;width:100%;height:74%;opacity:.94}
+.lantern{position:absolute;width:30px;height:42px;border-radius:46% 46% 50% 50%;
+  background:radial-gradient(circle at 48% 34%,#ff9b74,#b3372c 55%,#4c110f 100%);
+  box-shadow:0 0 34px rgba(205,64,44,.42),0 0 90px rgba(205,64,44,.18);animation:sway 6s ease-in-out infinite}
+.lantern::before{content:"";position:absolute;top:-84px;left:50%;width:1px;height:84px;background:linear-gradient(180deg,transparent,rgba(201,168,106,.55))}
+.lantern::after{content:"";position:absolute;left:50%;bottom:-13px;width:2px;height:13px;background:linear-gradient(180deg,#e6c98d,rgba(230,201,141,0))}
+.lantern.l1{top:18%;left:11%;transform-origin:top center}
+.lantern.l2{top:13%;right:19%;width:24px;height:34px;animation-delay:-2.2s;transform-origin:top center}
+.lantern.l3{top:31%;left:24%;width:16px;height:23px;opacity:.55;animation-delay:-4s}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.boot-veil{position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,rgba(4,3,3,.62) 0%,rgba(4,3,3,.16) 20%,rgba(4,3,3,0) 38%,rgba(4,3,3,.34) 53%,rgba(5,4,3,.78) 68%,rgba(5,4,3,.96) 80%,#050404 92%),
+    radial-gradient(110% 55% at 50% 100%,rgba(6,4,4,.94),transparent 66%)}
+.boot-frame{position:absolute;inset:12px;border:1px solid rgba(201,168,106,.2);pointer-events:none;z-index:6}
+.boot-frame::before,.boot-frame::after{content:"";position:absolute;width:26px;height:26px;border:1px solid rgba(201,168,106,.55)}
+.boot-frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.boot-frame::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.boot-inner{position:relative;z-index:8;height:100%;display:flex;flex-direction:column;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top) + 34px) 30px calc(env(safe-area-inset-bottom) + 26px)}
+.boot-bottom{width:100%}
+.name-field{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line2);padding:0 4px 10px;margin-bottom:16px}
+.nf-label{font-size:11px;letter-spacing:.28em;color:var(--gold);flex:0 0 auto}
+.name-field input{flex:1;font-family:var(--serif);font-size:20px;letter-spacing:.2em;color:var(--paper);min-width:0}
+.name-field input::placeholder{color:#5a4f45;font-size:16px;letter-spacing:.12em}
+.boot-minor{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:16px}
+.boot-minor button{font-size:12px;letter-spacing:.16em;color:#ddc08a;padding:4px 2px}
+.boot-minor button:active{color:var(--gold2)}
+.boot-tags{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:20px;font-size:10.5px;color:#8a7c6c;letter-spacing:.1em}
+.boot-tags i{width:2px;height:2px;border-radius:50%;background:var(--gold3)}
+.boot-foot{text-align:center;font-size:10px;color:#4f463e;letter-spacing:.16em;margin-top:12px}
+
+/* ---------- 开局 ---------- */
+.create{background:linear-gradient(180deg,#0b0807,#070505)}
+.create-scroll{flex:1;overflow-y:auto;padding:16px 18px calc(env(safe-area-inset-bottom) + 30px)}
+.create-name{font-family:var(--serif);font-size:14px;color:var(--muted);letter-spacing:.1em;margin:2px 0 15px;text-align:center}
+.create-name b{color:var(--gold2);font-size:18px;letter-spacing:.2em;font-weight:500}
+.fam-list{display:flex;flex-direction:column;gap:9px}
+.fam{display:flex;align-items:center;gap:13px;border:1px solid var(--line);background:rgba(255,255,255,.012);padding:12px 13px;position:relative;transition:.18s ease;text-align:left;width:100%}
+.fam:active{transform:scale(.992)}
+.fam.sel{border-color:rgba(201,168,106,.62);background:linear-gradient(90deg,rgba(201,168,106,.09),rgba(142,47,47,.06));box-shadow:0 0 0 1px rgba(201,168,106,.1) inset}
+.fam-badge{width:42px;height:42px;flex:0 0 auto;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;color:var(--gold2);background:radial-gradient(circle at 35% 25%,rgba(201,168,106,.16),rgba(142,47,47,.06))}
+.fam-main{flex:1;min-width:0}
+.fam-top{display:flex;align-items:center;gap:8px}
+.fam-name{font-family:var(--serif);font-size:17px;color:#e8dcc6;letter-spacing:.1em}
+.fam-diff{font-size:9.5px;padding:1px 6px;border:1px solid var(--line);color:var(--muted);letter-spacing:.08em}
+.fam-diff.easy{color:#c9a86a;border-color:rgba(201,168,106,.4)}
+.fam-diff.hard{color:#c4736a;border-color:rgba(196,115,106,.35)}
+.fam-house{font-size:11px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fam-mods{font-size:10px;color:#9c8b76;margin-top:3px;letter-spacing:.03em}
+.roll-panel{margin-top:20px;border:1px solid var(--line);background:rgba(255,255,255,.012);padding:14px 14px 12px}
+.roll-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.roll-head h3{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--gold2);letter-spacing:.2em}
+.mini-btn{font-size:11px;color:var(--gold);border:1px solid var(--line);padding:4px 9px;letter-spacing:.08em}
+.mini-btn:disabled{opacity:.35}
+.attr-list{display:flex;flex-direction:column;gap:8px}
+.attr-row{display:flex;align-items:center;gap:10px}
+.attr-k{width:34px;font-family:var(--serif);font-size:13px;color:#bca98c;letter-spacing:.05em;flex:0 0 auto}
+.attr-bar{flex:1;height:5px;background:rgba(255,255,255,.05);position:relative;overflow:hidden}
+.attr-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#7d6236,#c9a86a 70%,#f0dcae);transition:width .35s ease}
+.attr-val{width:30px;text-align:right;font-size:14px;color:#e7d9c2;font-family:var(--serif)}
+.attr-val.low{color:#c4736a}
+.attr-val.high{color:#f0dcae}
+.roll-note{font-size:10.5px;color:var(--dim);line-height:1.7;margin-top:12px;border-top:1px solid var(--line3);padding-top:9px}
+.create .btn-main{margin-top:20px}
+.cr-note{text-align:center;font-size:10.5px;color:var(--dim);letter-spacing:.1em;margin-top:12px}
+
+/* ---------- 游戏主界面 ---------- */
+.game{background:transparent}
+.topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 11px) 15px 9px;border-bottom:1px solid var(--line3);background:rgba(7,5,5,.72);backdrop-filter:blur(10px)}
+.tb-left{display:flex;align-items:center;gap:10px;min-width:0}
+.avatar{width:42px;height:42px;flex:0 0 auto;border:1px solid var(--line2);background:linear-gradient(160deg,rgba(142,47,47,.5),rgba(201,168,106,.12));
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;color:var(--gold2);position:relative}
+.avatar::after{content:"";position:absolute;inset:3px;border:1px solid rgba(201,168,106,.22);pointer-events:none}
+.tb-name{min-width:0}
+.tb-name b{display:block;font-family:var(--serif);font-size:16px;font-weight:500;color:#ece0cb;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-name span{display:block;font-size:10px;color:var(--muted);letter-spacing:.06em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-right{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.month-pill{font-size:10px;color:#b3a189;border:1px solid var(--line);padding:2px 8px;letter-spacing:.1em;white-space:nowrap}
+.menu-btn{width:32px;height:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.menu-btn i{width:17px;height:1px;background:var(--gold);opacity:.8}
+.resbar{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line3);background:rgba(10,8,7,.6)}
+.res{display:flex;align-items:baseline;justify-content:center;gap:4px;padding:6px 2px;border-right:1px solid var(--line3);min-width:0}
+.res:last-child{border-right:0}
+.res-k{font-family:var(--serif);font-size:10px;color:var(--gold3);border:1px solid rgba(201,168,106,.22);width:17px;height:17px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.res b{font-family:var(--serif);font-size:16px;color:#eadcc4;font-weight:500;letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis}
+.res small{font-size:8.5px;color:var(--dim);letter-spacing:.02em}
+.res-karma b{color:#d09284}
+.aprow{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 15px 7px}
+.ap{display:flex;align-items:center;gap:9px}
+.ap>span{font-size:9.5px;color:var(--dim);letter-spacing:.24em}
+.ap-dots{display:flex;gap:4px}
+.ap-dots i{width:7px;height:7px;transform:rotate(45deg);border:1px solid rgba(201,168,106,.4);background:transparent;transition:.25s}
+.ap-dots i.on{background:linear-gradient(135deg,#f0dcae,#c9a86a);border-color:#c9a86a;box-shadow:0 0 9px rgba(201,168,106,.35)}
+.ap b{font-size:10px;color:var(--muted);font-family:var(--serif);letter-spacing:.04em}
+.night-btn{font-family:var(--serif);font-size:12px;letter-spacing:.24em;text-indent:.24em;color:var(--gold2);
+  border:1px solid rgba(201,168,106,.5);padding:5px 14px;background:linear-gradient(180deg,rgba(201,168,106,.13),rgba(142,47,47,.14));
+  animation:nightGlow 3.4s ease-in-out infinite}
+.night-btn:active{transform:scale(.97)}
+.night-btn.ready{box-shadow:0 0 18px rgba(196,84,74,.25);border-color:rgba(196,84,74,.65)}
+@keyframes nightGlow{0%,100%{box-shadow:0 0 0 rgba(201,168,106,0)}50%{box-shadow:0 0 16px rgba(201,168,106,.18)}}
+.rankbar{flex:0 0 auto;margin:0 15px 7px;border:1px solid var(--line3);background:linear-gradient(90deg,rgba(201,168,106,.05),rgba(142,47,47,.04));padding:7px 10px}
+.rb-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted)}
+.rb-top b{font-family:var(--serif);font-size:13px;color:var(--gold2);font-weight:500;letter-spacing:.06em}
+.rb-top em{font-style:normal;color:#8b7b68;font-size:9.5px}
+.rb-track{height:3px;background:rgba(255,255,255,.05);margin-top:5px;position:relative;overflow:hidden}
+.rb-track i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8d6a38,#e3c78e);transition:width .5s ease}
+.rb-conds{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;font-size:9px;color:#7e7061}
+.rb-conds span{display:flex;align-items:center;gap:3px}
+.rb-conds i{font-style:normal;font-size:8px}
+.rb-conds .ok{color:#9db9a8}
+.rb-conds .no{color:#b97f74}
+
+.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:2px 15px calc(env(safe-area-inset-bottom) + 78px);-webkit-overflow-scrolling:touch}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:13px 2px 10px}
+.sec-head h2{font-family:var(--serif);font-size:19px;font-weight:500;color:#e9dcc5;letter-spacing:.14em}
+.sec-head p{font-size:10px;color:var(--dim);letter-spacing:.06em;margin-top:2px}
+.sec-tag{font-size:9.5px;color:var(--gold);border:1px solid var(--line);padding:2px 7px;white-space:nowrap}
+.card{position:relative;border:1px solid var(--line);background:linear-gradient(180deg,rgba(23,18,15,.9),rgba(12,9,8,.94))}
+.card::before,.card::after{content:"";position:absolute;width:9px;height:9px;border:1px solid rgba(201,168,106,.36);pointer-events:none;z-index:2}
+.card::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.card::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.place-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.place{position:relative;min-height:112px;text-align:left;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:38px 11px 10px}
+.place .p-bg{position:absolute;inset:0;opacity:.5;overflow:hidden}
+.place .p-bg svg{width:100%;height:100%;display:block}
+.place .p-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,5,5,.08) 0%,rgba(7,5,5,.5) 50%,rgba(7,5,5,.94) 100%)}
+.place .p-cost{position:absolute;top:8px;right:9px;font-size:9px;color:var(--gold);border:1px solid var(--line);padding:1px 6px;background:rgba(7,5,5,.55);z-index:2}
+.place .p-cost.none{border-color:transparent;color:#7e7061}
+.place .p-glyph{position:absolute;top:8px;left:10px;z-index:2;font-family:var(--serif);font-size:13px;color:rgba(240,220,174,.85);letter-spacing:.08em;text-shadow:0 2px 10px rgba(0,0,0,.7)}
+.place .p-glyph small{display:block;font-family:var(--sans);font-size:8px;color:rgba(201,168,106,.6);letter-spacing:.1em}
+.place .p-name{position:relative;z-index:2;font-family:var(--serif);font-size:16px;color:#f0e2c8;letter-spacing:.08em;line-height:1.3}
+.place .p-desc{position:relative;z-index:2;font-size:9px;color:#a39480;line-height:1.5;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.place .p-tag{position:relative;z-index:2;font-size:8px;color:rgba(201,168,106,.7);letter-spacing:.05em;margin-top:4px}
+.place:active{transform:scale(.985)}
+.place.locked{filter:saturate(.3);opacity:.62}
+.place.locked .p-cost{color:#9b8c7a;border-color:rgba(255,255,255,.12)}
+.place.locked::after{border-color:rgba(255,255,255,.16)}
+.place .p-lock{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;background:rgba(5,4,4,.55);font-size:10px;color:#b9a78e;letter-spacing:.12em}
+
+.bld{display:flex;gap:11px;padding:12px;margin-bottom:9px;align-items:stretch}
+.bld-ico{width:54px;flex:0 0 auto;border:1px solid var(--line3);position:relative;overflow:hidden;background:rgba(0,0,0,.25)}
+.bld-ico svg{width:100%;height:100%;display:block}
+.bld-ico img.bld-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.95) contrast(1.03)}
+.bld-ico span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:21px;color:rgba(240,220,174,.9);text-shadow:0 2px 12px #000}
+.bld-ico:has(img.bld-photo) span{align-items:flex-end;justify-content:flex-start;font-size:11px;padding:0 0 3px 4px;color:rgba(240,220,174,.85);text-shadow:0 1px 6px #000}
+.bld-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.bld-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bld-name{font-family:var(--serif);font-size:15.5px;color:#ecdfc8;letter-spacing:.06em}
+.bld-lv{display:flex;gap:2px}
+.bld-lv i{width:4px;height:9px;background:rgba(255,255,255,.08);transform:skewX(-14deg)}
+.bld-lv i.on{background:linear-gradient(180deg,#f0dcae,#a9824a)}
+.bld-desc{font-size:9.5px;color:var(--dim);margin-top:2px}
+.bld-stats{display:flex;gap:10px;margin-top:5px;font-size:10px;color:#b6a58e;flex-wrap:wrap}
+.bld-stats b{color:var(--gold2);font-weight:500;font-family:var(--serif);font-size:12px}
+.bld-stats em{font-style:normal;color:#7f8f85;font-size:9px}
+.bld-slots{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
+.slot{font-size:8.5px;border:1px dashed rgba(201,168,106,.25);color:#7f7060;padding:1px 6px;line-height:1.6}
+.slot.filled{border-style:solid;color:#c9b28c;background:rgba(201,168,106,.07);border-color:rgba(201,168,106,.25)}
+.bld-btns{display:flex;flex-direction:column;justify-content:center;gap:6px;flex:0 0 auto;width:66px}
+.mini-act{font-size:10.5px;border:1px solid var(--line);color:#cfb68d;padding:5px 2px;letter-spacing:.05em;text-align:center;line-height:1.3}
+.mini-act:disabled{opacity:.32}
+.mini-act.gold{border-color:rgba(201,168,106,.45);color:var(--gold2);background:rgba(201,168,106,.06)}
+.bld.locked{opacity:.55}
+.bld.locked .bld-ico{filter:grayscale(.6)}
+
+.rival{display:flex;gap:11px;padding:10px;margin-bottom:9px;align-items:stretch}
+.rv-art{width:68px;flex:0 0 auto;position:relative;overflow:hidden;border:1px solid var(--line3);background:#0b0807}
+.rv-art .portrait{width:100%;height:100%}
+.rv-main{flex:1;min-width:0}
+.rv-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.rv-name{font-family:var(--serif);font-size:16px;color:#ecdfc8;letter-spacing:.06em}
+.rv-rank{font-size:9px;color:var(--gold);border:1px solid var(--line);padding:0 5px}
+.rv-bond{font-size:8.5px;color:#9c8b76;margin-left:auto;white-space:nowrap}
+.rv-bars{display:flex;flex-direction:column;gap:3px;margin-top:5px}
+.rv-bar{display:flex;align-items:center;gap:6px;font-size:8.5px;color:#8d7e6c}
+.rv-bar span{width:25px;flex:0 0 auto}
+.rv-bar i{flex:1;height:3px;background:rgba(255,255,255,.06);position:relative;overflow:hidden;display:block}
+.rv-bar i b{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8d3b35,#c4736a)}
+.rv-bar.fav i b{background:linear-gradient(90deg,#7d6236,#e3c78e)}
+.rv-bar.pw i b{background:linear-gradient(90deg,#3f5c50,#8aab9b)}
+.rv-bar em{width:22px;text-align:right;font-style:normal;color:#b09f88}
+.rv-acts{display:flex;gap:5px;margin-top:7px}
+.rv-acts button{flex:1;font-size:10px;padding:4px 2px;border:1px solid var(--line);color:#c9b28c;letter-spacing:.04em}
+.rv-acts button:disabled{opacity:.32}
+.rv-acts button.primary{border-color:rgba(201,168,106,.45);color:var(--gold2);background:rgba(201,168,106,.06)}
+.ally-tag{font-size:8px;color:#9db9a8;border:1px solid rgba(138,171,155,.3);padding:0 4px}
+
+.person{display:flex;gap:10px;padding:9px;margin-bottom:8px;align-items:center}
+.ps-art{width:54px;height:70px;flex:0 0 auto;overflow:hidden;border:1px solid var(--line3);position:relative}
+.ps-art .portrait{width:100%;height:100%}
+.ps-main{flex:1;min-width:0}
+.ps-top{display:flex;align-items:center;gap:6px}
+.ps-name{font-family:var(--serif);font-size:14.5px;color:#e9dcc5}
+.ps-title{font-size:8.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps-meta{display:flex;gap:8px;margin-top:3px;font-size:9px;color:#a39480;flex-wrap:wrap}
+.ps-meta b{color:var(--gold2);font-weight:500}
+.ps-meta em{font-style:normal;color:#8fae9d}
+.ps-btn{flex:0 0 auto;font-size:10px;padding:5px 9px;border:1px solid var(--line);color:var(--gold2);line-height:1.3;text-align:center}
+.ps-btn:disabled{opacity:.35}
+.ps-btn.own{border-color:rgba(138,171,155,.28);color:#8fae9d}
+
+.info-card{padding:12px 13px;margin-bottom:9px}
+.info-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.info-top h3{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--gold2);letter-spacing:.1em}
+.info-top span{font-size:9px;color:var(--dim)}
+.info-body{font-size:11px;color:#ab9c88;line-height:1.85;margin-top:6px}
+.meter{height:5px;background:rgba(255,255,255,.06);margin-top:6px;position:relative;overflow:hidden}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#5d1b22,#c4544a);transition:width .4s}
+.meter.jade i{background:linear-gradient(90deg,#3f5c50,#8aab9b)}
+.meter.gold i{background:linear-gradient(90deg,#7d6236,#e3c78e)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
+.kv div{border:1px solid var(--line3);padding:6px 8px;font-size:9.5px;color:var(--dim);display:flex;justify-content:space-between;gap:5px}
+.kv b{color:#d8c8ae;font-family:var(--serif);font-size:12px;font-weight:500}
+.log-item{font-size:10.5px;color:#9f917d;line-height:1.7;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.035);display:flex;gap:7px}
+.log-item span{color:var(--gold3);flex:0 0 auto;font-size:9px;padding-top:1px}
+.item-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.item-row:last-child{border-bottom:0}
+.item-ico{width:30px;height:30px;flex:0 0 auto;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:14px;color:var(--gold2);background:rgba(201,168,106,.05)}
+.item-main{flex:1;min-width:0}
+.item-name{font-family:var(--serif);font-size:12.5px;color:#e2d4bc}
+.item-desc{font-size:9px;color:var(--dim);line-height:1.5}
+.item-use{font-size:9.5px;border:1px solid var(--line);color:var(--gold);padding:3px 8px;flex:0 0 auto}
+.empty{text-align:center;font-size:11px;color:#5f554b;padding:18px 0;letter-spacing:.08em}
+.section-hint{font-size:10px;color:#6f6256;line-height:1.7;margin:-3px 2px 10px;letter-spacing:.02em}
+.section-hint b{color:#b39a72;font-weight:500}
+
+.tabbar{position:absolute;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);
+  background:rgba(8,6,5,.94);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(12px)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:55px;position:relative;color:#6e6154}
+.tab-g{font-family:var(--serif);font-size:15px;line-height:1;transition:.2s}
+.tab-l{font-size:8.5px;letter-spacing:.08em}
+.tab.on{color:var(--gold2)}
+.tab.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.tab.on .tab-g{text-shadow:0 0 14px rgba(201,168,106,.45)}
+
+/* ---------- 剧情 ---------- */
+.scene{position:absolute;inset:0;z-index:60;background:#080605;display:flex;flex-direction:column;animation:sceneIn .32s ease}
+@keyframes sceneIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.scene-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:calc(env(safe-area-inset-top) + 9px) 14px 8px;border-bottom:1px solid var(--line3);background:rgba(8,6,5,.86)}
+.sc-back{font-size:11.5px;color:#a39480;letter-spacing:.1em;padding:5px 2px}
+.sc-ch{font-size:9.5px;color:var(--gold3);letter-spacing:.14em}
+.sc-loc{font-size:9.5px;color:#857767;letter-spacing:.08em}
+.scene-scroll{flex:1;overflow-y:auto}
+.scene-art-wrap{position:relative;height:228px;overflow:hidden;background:#0b0807}
+.scene-art-wrap .sa-bg{position:absolute;inset:0}
+.scene-art-wrap .sa-bg svg{width:100%;height:100%;display:block}
+.scene-art-wrap .sa-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,5,.06),transparent 42%,rgba(8,6,5,.92) 100%)}
+.scene-art-wrap .sa-figure{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);width:56%;max-width:210px;height:96%;filter:drop-shadow(0 12px 26px rgba(0,0,0,.6))}
+.scene-art-wrap .sa-figure svg{width:100%;height:100%}
+.sa-label{position:absolute;left:16px;bottom:14px;z-index:3}
+.sa-label b{display:block;font-family:var(--serif);font-size:23px;color:#f0e2c8;letter-spacing:.14em;text-shadow:0 3px 18px #000}
+.sa-label span{display:block;font-size:9px;color:rgba(201,168,106,.8);letter-spacing:.18em;margin-top:1px}
+.sa-seal{position:absolute;right:15px;bottom:15px;z-index:3;width:36px;height:48px;border:1px solid rgba(196,84,74,.55);color:#d98a7c;
+  font-family:var(--serif);font-size:12px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;letter-spacing:.1em;background:rgba(142,47,47,.1)}
+.scene-inner{padding:0 21px 34px;position:relative;z-index:4;margin-top:-10px}
+.scene-kicker{font-size:9.5px;color:var(--gold3);letter-spacing:.22em;margin-bottom:5px}
+.scene-title{font-family:var(--serif);font-size:26px;line-height:1.35;font-weight:500;color:#f1e3c9;letter-spacing:.1em;text-shadow:0 4px 22px rgba(0,0,0,.65)}
+.scene-title::after{content:"";display:block;width:38px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-top:11px}
+.scene-body{font-family:var(--serif);font-size:15.5px;line-height:2.05;color:#cdc0ac;letter-spacing:.03em;margin-top:14px}
+.scene-body p{margin-bottom:9px}
+.scene-body p:last-child{margin-bottom:0}
+.scene-body .em{color:#e7cf9f}
+.scene-body .red{color:#d08a7c}
+.scene-choices{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+.choice{width:100%;text-align:left;border:1px solid rgba(201,168,106,.3);background:linear-gradient(90deg,rgba(201,168,106,.06),rgba(142,47,47,.035));
+  padding:11px 13px;transition:.15s;position:relative}
+.choice:active{transform:scale(.994);background:rgba(201,168,106,.11)}
+.choice b{display:block;font-family:var(--serif);font-size:14.5px;color:#ecdcbe;font-weight:500;letter-spacing:.05em;line-height:1.5}
+.choice span{display:block;font-size:9.5px;color:#8d7e6c;line-height:1.5;margin-top:2px}
+.choice .ch-cost{position:absolute;top:9px;right:10px;font-size:8.5px;color:#b08a4e;border:1px solid var(--line);padding:0 5px}
+.choice:disabled{opacity:.35}
+.scene-note{font-size:9px;color:#5f554b;text-align:center;margin-top:17px;letter-spacing:.08em}
+.eff-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:13px}
+.eff{font-size:9.5px;padding:2px 7px;border:1px solid rgba(138,171,155,.26);color:#9db9a8;letter-spacing:.03em;background:rgba(138,171,155,.05)}
+.eff.down{border-color:rgba(196,115,106,.28);color:#c4736a;background:rgba(196,115,106,.05)}
+.eff.gold{border-color:rgba(201,168,106,.3);color:#d8bd89;background:rgba(201,168,106,.05)}
+.scene-result{font-family:var(--serif);font-size:14px;line-height:1.9;color:#c3b49e;border-left:1px solid rgba(201,168,106,.35);padding-left:11px;margin-top:14px;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- 结局 ---------- */
+.ending{position:absolute;inset:0;z-index:70;overflow-y:auto;background:
+  radial-gradient(110% 50% at 50% 0%,rgba(142,47,47,.26),transparent 60%),
+  linear-gradient(180deg,#0c0807,#050404 70%)}
+.end-wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 40px) 25px calc(env(safe-area-inset-bottom) + 32px);text-align:center}
+.end-kicker{font-size:10px;color:rgba(201,168,106,.6);letter-spacing:.34em}
+.end-seal{width:86px;height:86px;border:1px solid rgba(196,84,74,.5);margin:22px 0 20px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:34px;color:#e2b7a5;background:radial-gradient(circle at 40% 30%,rgba(142,47,47,.28),rgba(142,47,47,.05));
+  position:relative;transform:rotate(-2deg);box-shadow:0 0 50px rgba(142,47,47,.16)}
+.end-seal::after{content:"";position:absolute;inset:4px;border:1px solid rgba(196,84,74,.28)}
+.end-title{font-family:var(--serif);font-size:35px;color:#f1e3c9;letter-spacing:.14em;line-height:1.35;font-weight:500;text-shadow:0 6px 30px rgba(0,0,0,.7)}
+.end-sub{font-size:10px;color:var(--gold3);letter-spacing:.2em;margin-top:8px}
+.end-body{font-family:var(--serif);font-size:14px;line-height:2.05;color:#b9ab97;margin-top:20px;text-align:left;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:17px 2px}
+.end-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;margin-top:18px}
+.end-stat{border:1px solid var(--line3);padding:7px 9px;text-align:left;display:flex;justify-content:space-between;align-items:baseline}
+.end-stat span{font-size:9px;color:var(--dim)}
+.end-stat b{font-family:var(--serif);font-size:15px;color:#dfcfb3;font-weight:500}
+.end-ach{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:14px}
+.end-ach span{font-size:9px;border:1px solid rgba(201,168,106,.28);color:#c9b28c;padding:2px 7px}
+.end-btns{width:100%;display:flex;flex-direction:column;gap:9px;margin-top:24px}
+.end-btns .btn-main{height:48px;font-size:15px}
+.end-foot{font-size:9px;color:#4f463e;margin-top:14px;letter-spacing:.12em}
+
+/* ---------- 弹层 ---------- */
+.sheet-wrap{position:absolute;inset:0;z-index:80}
+.sheet-mask{position:absolute;inset:0;background:rgba(0,0,0,.66);animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:84%;background:linear-gradient(180deg,#13100e,#0a0807);
+  border-top:1px solid var(--line2);border-radius:14px 14px 0 0;padding:0 18px calc(env(safe-area-inset-bottom) + 18px);
+  animation:sheetUp .26s cubic-bezier(.2,.8,.2,1);overflow:hidden;display:flex;flex-direction:column}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grip{width:34px;height:3px;border-radius:2px;background:rgba(201,168,106,.25);margin:8px auto 3px;flex:0 0 auto}
+.sheet-body{overflow-y:auto;padding-top:11px}
+/* 居中弹窗（选择/确认类） */
+.sheet-wrap.dlg{display:flex;align-items:center;justify-content:center;padding:26px 20px}
+.sheet-wrap.dlg .sheet{position:relative;left:auto;right:auto;bottom:auto;top:auto;width:100%;max-width:392px;max-height:76%;
+  padding:16px 18px 12px;border:1px solid rgba(201,168,106,.36);border-radius:8px;
+  background:linear-gradient(180deg,#131a15,#080c09);box-shadow:0 30px 80px rgba(0,0,0,.8);
+  animation:dlgIn .22s cubic-bezier(.2,.8,.2,1)}
+.sheet-wrap.dlg .sheet-grip{display:none}
+@keyframes dlgIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+/* 立绘大图 */
+.lb{position:absolute;inset:0;z-index:180;display:flex;align-items:center;justify-content:center;
+  padding:20px 16px;background:rgba(2,4,3,.95);animation:fadeIn .16s ease}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;border:1px solid rgba(201,168,106,.34);
+  box-shadow:0 24px 70px rgba(0,0,0,.85);animation:lbIn .2s cubic-bezier(.2,.8,.2,1)}
+@keyframes lbIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.ps-art[data-big]{cursor:zoom-in}
+.sh-title{font-family:var(--serif);font-size:20px;color:#eedfc4;letter-spacing:.12em;font-weight:500}
+.sh-sub{font-size:10px;color:var(--dim);margin-top:3px;line-height:1.6}
+.sh-hair{height:1px;background:linear-gradient(90deg,var(--line2),transparent);margin:12px 0 4px}
+.scheme{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,.04);width:100%;text-align:left}
+.scheme:last-child{border-bottom:0}
+.scheme-ico{width:38px;height:38px;flex:0 0 auto;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:16px;color:var(--gold2);background:rgba(201,168,106,.05)}
+.scheme-main{flex:1;min-width:0}
+.scheme-top{display:flex;align-items:center;gap:6px}
+.scheme-name{font-family:var(--serif);font-size:14px;color:#e7d8bf}
+.scheme-rate{font-size:9px;color:#b08a4e;border:1px solid var(--line);padding:0 5px;margin-left:auto;white-space:nowrap}
+.scheme-desc{font-size:9px;color:var(--dim);line-height:1.5;margin-top:2px}
+.scheme-cost{font-size:8.5px;color:#8d7e6c;margin-top:3px}
+.scheme:disabled{opacity:.35}
+.menu-list{display:flex;flex-direction:column;margin-top:6px}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;color:#d3c4ac;letter-spacing:.06em;text-align:left}
+.menu-item small{font-size:9px;color:var(--dim);letter-spacing:.04em}
+.menu-item.danger{color:#c4736a}
+.gallery-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.gal{border:1px solid var(--line3);padding:8px;min-height:64px;display:flex;flex-direction:column;justify-content:center}
+.gal b{font-family:var(--serif);font-size:12.5px;color:#d9c8a9;font-weight:500;letter-spacing:.05em;line-height:1.4}
+.gal span{font-size:8px;color:var(--dim);margin-top:2px}
+.gal.locked{opacity:.45}
+.gal.locked b{color:#6f6256;letter-spacing:.2em}
+/* 居中弹层（图鉴用） */
+.sheet-wrap.center{display:flex;align-items:center;justify-content:center;padding:22px 16px}
+.sheet-wrap.center .sheet{position:relative;left:auto;right:auto;bottom:auto;width:100%;max-width:402px;max-height:78%;
+  border:1px solid rgba(201,168,106,.5);border-radius:14px;padding:0 16px 16px;
+  background:linear-gradient(180deg,#1b0d0a,#120807 52%,#0a0504);
+  box-shadow:0 24px 70px rgba(0,0,0,.8),inset 0 0 0 1px rgba(176,50,38,.22),inset 0 1px 0 rgba(240,220,174,.12);
+  animation:sheetPop .3s cubic-bezier(.2,.9,.2,1)}
+@keyframes sheetPop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.sheet-wrap.center .sheet-grip{display:none}
+.sheet-wrap.center .sh-title{padding-top:18px}
+.sheet-wrap.center .modal-x{position:absolute;right:6px;top:6px;width:30px;height:30px;border:0;background:transparent;
+  color:rgba(201,168,106,.68);font-size:20px;line-height:1;font-family:var(--serif);cursor:pointer;z-index:2}
+.sheet-wrap.center .modal-x:active{color:var(--gold2)}
+/* 结局图鉴：红金 */
+.sheet-wrap.gal .sh-title{color:#f0dcae;text-shadow:0 0 18px rgba(176,50,38,.45)}
+.sheet-wrap.gal .sh-sub{color:#a5866a}
+.sheet-wrap.gal .sh-hair{background:linear-gradient(90deg,rgba(201,168,106,.55),rgba(176,50,38,.35),transparent)}
+.sheet-wrap.gal .gal{border-color:rgba(201,168,106,.26);background:linear-gradient(180deg,rgba(132,30,23,.26),rgba(46,12,9,.1))}
+.sheet-wrap.gal .gal b{color:#efd9a9}
+.sheet-wrap.gal .gal span{color:#9d8266}
+.sheet-wrap.gal .gal.locked{border-color:rgba(201,168,106,.17);background:linear-gradient(180deg,rgba(112,26,20,.22),rgba(36,9,7,.08))}
+.sheet-wrap.gal .gal.locked b{color:#96704e}
+.sheet-wrap.gal .end-ach span{border-color:rgba(201,168,106,.34);color:#d8b986;background:rgba(120,28,22,.12)}
+.sheet-wrap.gal .help-body{color:#c8b089}
+.help-body{font-size:11.5px;color:#ab9c88;line-height:1.9}
+.help-body h4{font-family:var(--serif);font-size:13px;color:var(--gold2);font-weight:500;margin:12px 0 4px;letter-spacing:.08em}
+.help-body p{margin-bottom:4px}
+.help-body b{color:#d8bd89;font-weight:500}
+
+/* portrait placeholder */
+.portrait{position:relative;overflow:hidden;background:linear-gradient(165deg,var(--pa,#2a1a16),var(--pb,#0c0908) 70%)}
+.portrait::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(60% 45% at 50% 28%,rgba(240,220,174,.16),transparent 65%),
+  repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 1px,transparent 1px 7px)}
+.portrait svg.pt-svg{position:absolute;inset:0;width:100%;height:100%}
+.portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+.portrait .pt-glyph{position:absolute;right:4px;bottom:0;font-family:var(--serif);font-size:26px;color:rgba(240,220,174,.16);line-height:1;z-index:1}
+.portrait .pt-tag{position:absolute;left:0;right:0;bottom:0;z-index:2;background:linear-gradient(180deg,transparent,rgba(5,4,4,.9));padding:10px 4px 3px;
+  font-size:7px;color:rgba(240,220,174,.55);text-align:center;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.portrait .pt-name{position:absolute;left:0;right:0;bottom:11px;z-index:2;text-align:center;font-family:var(--serif);font-size:11px;color:#f0e2c8;letter-spacing:.08em;text-shadow:0 2px 8px #000}
+
+/* misc */
+.fade-in{animation:fadeIn .25s ease}
+.night-hint{font-size:9px;color:#7e7061;letter-spacing:.04em}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* =========================================================
+   参照《金玉良缘》的版面：顶栏 / 状态条 / 属性条 / 舆图 /
+   章节卡 / 悬浮入夜 / 底栏 / 横滑身世卡
+   ========================================================= */
+:root{
+  --ink:#050907;--ink2:#0a100d;--ink3:#0e1612;--ink4:#131d17;
+  --jade:#8fb3a4;--jade2:#cfe0d6;--jade3:#5f8274;
+  --text:#d9e2da;--muted:#93a399;--dim:#66766c;
+  --line:rgba(201,168,106,.2);--line2:rgba(201,168,106,.44);--line3:rgba(143,179,164,.16);
+}
+body{background:#020403;color:var(--text);font-size:16.5px}
+#app{background:var(--ink)}
+#ambient::before{background:
+  radial-gradient(120% 55% at 50% -10%,rgba(143,179,164,.1),transparent 62%),
+  radial-gradient(90% 40% at 100% 108%,rgba(201,168,106,.06),transparent 70%),
+  linear-gradient(180deg,#07100c 0%,#050907 58%,#040705 100%)}
+
+/* 顶栏 */
+.topbar{padding:calc(env(safe-area-inset-top) + 12px) 16px 10px;background:rgba(5,9,7,.76);border-bottom:1px solid var(--line3)}
+.avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;border:1px solid rgba(201,168,106,.55);
+  background:radial-gradient(circle at 40% 30%,rgba(201,168,106,.16),rgba(7,12,9,.9));display:block;position:relative;flex:0 0 auto}
+.avatar::after{content:"";position:absolute;inset:3px;border:1px solid rgba(201,168,106,.24);border-radius:50%;pointer-events:none;z-index:4}
+.avatar .portrait{position:absolute;inset:0;background:transparent}
+.avatar .portrait::before{display:none}
+.avatar .portrait .pt-name,.avatar .portrait .pt-tag,.avatar .portrait .pt-glyph{display:none}
+.avatar .portrait img{object-position:center 18%}
+.avatar img.av-face{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;position:relative;z-index:2}
+.avatar img.av-rank{object-position:center 16%;transform:scale(1.6);transform-origin:50% 23%}
+.tb-name b{font-size:17.5px;color:#ece0cb}
+.tb-name span{font-size:10.5px;color:var(--muted)}
+.ch-pill{font-family:var(--serif);font-size:11px;color:var(--gold2);border:1px solid rgba(201,168,106,.34);
+  padding:3px 8px;letter-spacing:.08em;background:rgba(201,168,106,.06);white-space:nowrap}
+
+/* 行动 / 银两 */
+.statusbar{display:flex;align-items:center;justify-content:space-between;padding:5px 18px 0;position:relative;z-index:3}
+.ap-label{font-size:11.5px;color:var(--dim);letter-spacing:.14em}
+.ap-dots{gap:7px}
+.ap-dots i{width:7px;height:7px}
+.ap b{font-size:10px;color:var(--muted);font-family:var(--serif)}
+.money{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--gold)}
+.money svg{width:14px;height:14px}
+.money b{font-family:var(--serif);font-weight:500;font-size:16px;color:var(--gold2);letter-spacing:.02em}
+.money small{font-size:9.5px;color:var(--dim)}
+
+/* 属性条 + 三值 */
+.attrs{display:grid;grid-template-columns:repeat(5,1fr);margin:8px 15px 0;border:1px solid rgba(201,168,106,.16);background:rgba(8,14,11,.72);position:relative;z-index:3}
+.attr{display:flex;align-items:baseline;justify-content:center;gap:5px;padding:6px 0;border-right:1px solid rgba(201,168,106,.12);min-width:0}
+.attr:last-child{border-right:0}
+.attr span{font-family:var(--serif);font-size:11px;color:var(--muted);letter-spacing:.04em;white-space:nowrap}
+.attr b{font-family:var(--serif);font-weight:400;font-size:16px;color:var(--gold2)}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);margin:6px 15px 0;border:1px solid rgba(143,179,164,.13);background:rgba(7,12,9,.55);position:relative;z-index:3}
+.tri div{display:flex;align-items:center;justify-content:center;gap:5px;padding:4px 0;border-right:1px solid rgba(143,179,164,.1);font-size:10px;color:var(--dim);letter-spacing:.06em}
+.tri div:last-child{border-right:0}
+.tri b{font-family:var(--serif);font-size:13px;color:#c9b28c;font-weight:500}
+.tri .danger b{color:#c4736a}
+
+/* 主区 */
+.main{padding:10px 15px calc(env(safe-area-inset-bottom) + 98px)}
+.sec-head{margin:13px 2px 9px}
+.sec-head h2{font-size:18px;color:#e9dcc5}
+.sec-head h2::before{content:"▍";color:var(--gold);font-size:13px;margin-right:5px;opacity:.85}
+.sec-head p{font-size:9.5px;color:var(--dim)}
+.sec-tag{font-size:9px}
+
+/* 章节卡 */
+.chapter-card{position:relative;padding:15px 14px 12px;border:1px solid rgba(201,168,106,.22);overflow:hidden;
+  background:linear-gradient(120deg,rgba(17,28,22,.94),rgba(7,12,9,.9) 60%,rgba(30,24,15,.55));margin-top:2px}
+.chapter-card::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background-image:linear-gradient(rgba(201,168,106,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,106,.05) 1px,transparent 1px);
+  background-size:26px 26px}
+.ch-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:var(--gold);letter-spacing:.18em;position:relative;z-index:1}
+.ch-seal{width:26px;height:34px;border:1px solid rgba(194,90,71,.45);color:#d08a7c;font-family:var(--serif);font-size:12px;
+  display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;line-height:1.1;background:rgba(142,47,47,.08);transform:rotate(2deg)}
+.ch-title{font-family:var(--serif);font-size:30px;font-weight:500;color:#f0e2c8;letter-spacing:.12em;margin:5px 0 2px;position:relative;z-index:1}
+.ch-meta{font-size:9.5px;color:var(--muted);letter-spacing:.06em;position:relative;z-index:1}
+.ch-line{font-family:var(--serif);font-size:12px;color:#c9b28c;margin-top:7px;position:relative;z-index:1;letter-spacing:.04em}
+.ch-desc{font-size:10.5px;line-height:1.75;color:#9fada3;margin-top:3px;position:relative;z-index:1}
+.ch-foot{margin-top:9px;padding-top:8px;border-top:1px solid rgba(201,168,106,.12);position:relative;z-index:1}
+.chapter-card .rb-top{font-size:9px}
+.chapter-card .rb-top b{font-size:12px}
+.chapter-card .rb-track{margin-top:5px}
+.chapter-card .rb-conds{margin-top:5px;font-size:8.5px}
+
+/* 舆图 */
+.map-panel{margin-top:10px;border:1px solid rgba(201,168,106,.22);position:relative;overflow:hidden;background:#07100c;
+  box-shadow:0 12px 36px rgba(0,0,0,.45),inset 0 0 40px rgba(0,0,0,.5)}
+.map-art{position:relative;height:auto;aspect-ratio:960/676;max-height:none;min-height:0;overflow:hidden}
+.map-art svg.map-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.map-art img.map-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:1}
+.map-art::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(4,8,6,.3),transparent 24%,transparent 74%,rgba(4,8,6,.34)),
+  radial-gradient(110% 70% at 50% 0%,rgba(201,168,106,.05),transparent 60%)}
+.map-head{position:absolute;top:10px;left:12px;z-index:4;font-family:var(--serif);font-size:12px;color:var(--gold2);letter-spacing:.16em;text-shadow:0 2px 10px #000}
+.map-head small{display:block;font-family:var(--sans);font-size:8px;color:rgba(201,168,106,.62);letter-spacing:.1em;margin-top:1px}
+.map-hint{position:absolute;top:10px;right:11px;z-index:4;font-size:8.5px;color:rgba(201,168,106,.82);border:1px solid rgba(201,168,106,.24);padding:2px 6px;background:rgba(5,9,7,.62)}
+.map-pin{position:absolute;z-index:5;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;padding:0;color:var(--gold2)}
+.map-pin .pin-dot{width:31px;height:31px;border-radius:50%;border:1px solid rgba(201,168,106,.58);
+  background:radial-gradient(circle at 38% 30%,rgba(201,168,106,.24),rgba(7,12,9,.94));
+  display:grid;place-items:center;font-family:var(--serif);font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+.map-pin .pin-name{font-size:8px;letter-spacing:.03em;background:rgba(5,9,7,.8);border:1px solid rgba(201,168,106,.22);padding:0 5px;white-space:nowrap;line-height:1.6}
+.map-pin:active .pin-dot{background:rgba(201,168,106,.3)}
+.map-pin.locked{opacity:.42}
+.map-pin.locked .pin-dot{border-color:rgba(255,255,255,.2)}
+.map-pin.locked .pin-name{color:#8d7e6c}
+.map-pin .pin-lock{font-size:7px;color:#b97f74;line-height:1.2}
+.map-caption{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-top:1px solid rgba(201,168,106,.15);
+  font-size:8.5px;color:var(--dim);letter-spacing:.08em;background:rgba(5,9,7,.58)}
+
+/* 今日行止：紧凑卡 */
+.place-grid{gap:8px}
+.place{min-height:88px;padding:9px;display:flex;align-items:flex-start;gap:8px;text-align:left;
+  background:linear-gradient(180deg,rgba(16,24,19,.9),rgba(7,12,9,.94));overflow:hidden}
+.place .p-bg,.place .p-shade{display:none}
+.place .p-glyph{position:static;flex:0 0 auto;width:32px;height:32px;border:1px solid rgba(201,168,106,.26);
+  display:grid;place-items:center;font-family:var(--serif);font-size:16px;color:var(--gold2);background:rgba(201,168,106,.06);z-index:1}
+.place .p-glyph small{display:none}
+.place .p-main{flex:1;min-width:0;position:relative;z-index:2}
+.place .p-cost{position:absolute;top:-1px;right:0;font-size:9px;color:var(--gold);border:1px solid rgba(201,168,106,.2);padding:0 4px;background:rgba(5,9,7,.45)}
+.place .p-cost.none{display:none}
+.place .p-name{font-size:16px;color:#ecdfc8;letter-spacing:.04em;line-height:1.25;padding-right:36px;margin-top:0}
+.place .p-name em{display:block;font-style:normal;font-size:9.5px;color:var(--dim);letter-spacing:.04em;margin-top:1px}
+.place .p-desc{font-size:10.2px;color:#8f9c92;line-height:1.5;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.place .p-tag{font-size:9px;color:rgba(201,168,106,.68);margin-top:4px;letter-spacing:.02em}
+.place .p-lock{inset:0;background:rgba(5,7,6,.56);font-size:10px;z-index:4}
+.place.locked{filter:none}
+
+/* 悬浮入夜 */
+.fab-climax{position:absolute;right:16px;bottom:calc(env(safe-area-inset-bottom) + 76px);z-index:29;
+  display:flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid rgba(194,90,71,.55);
+  background:linear-gradient(120deg,rgba(72,26,20,.94),rgba(26,13,10,.96));
+  box-shadow:0 10px 28px rgba(0,0,0,.62),0 0 22px rgba(158,61,48,.16);animation:fabIn .5s ease both}
+.fab-climax::before{content:"";width:4px;height:4px;background:var(--red2);transform:rotate(45deg);box-shadow:0 0 8px rgba(194,90,71,.9)}
+.fab-climax .fc-k{font-size:9px;letter-spacing:.12em;color:rgba(238,217,168,.66);writing-mode:vertical-rl;line-height:1.1}
+.fab-climax b{font-family:var(--serif);font-size:13px;color:#f0dcae;letter-spacing:.12em;font-weight:500}
+.fab-climax.ready{border-color:rgba(201,168,106,.7);box-shadow:0 10px 28px rgba(0,0,0,.62),0 0 24px rgba(201,168,106,.28);animation:nightGlow 2.2s ease-in-out infinite}
+@keyframes fabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* 底栏 */
+.tabbar{padding:7px 6px calc(env(safe-area-inset-bottom) + 7px);background:linear-gradient(180deg,rgba(6,10,8,.94),rgba(5,9,7,.98))}
+.tab{height:52px;gap:3px;color:rgba(147,163,153,.6)}
+.tab .tab-g{width:24px;height:24px;border:1px solid transparent;display:grid;place-items:center;font-family:var(--serif);font-size:17px;line-height:1}
+.tab .tab-l{font-size:10.5px;letter-spacing:.08em}
+.tab.on{color:var(--gold2)}
+.tab.on::before{display:none}
+.tab.on .tab-g{border-color:rgba(201,168,106,.45);background:rgba(201,168,106,.06);text-shadow:0 0 12px rgba(201,168,106,.4)}
+
+/* 身世横滑卡 */
+.fam-list{display:flex;flex-direction:row;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:0 2px 8px;scrollbar-width:none;touch-action:pan-x}
+.fam-list::-webkit-scrollbar{display:none;width:0;height:0}
+.fam{flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column;align-items:stretch;padding:0;min-height:0;overflow:hidden;
+  border:1px solid rgba(201,168,106,.2);background:linear-gradient(180deg,rgba(16,26,20,.92),rgba(7,12,9,.96));text-align:left}
+.fam-art{height:236px;width:100%;align-self:stretch;position:relative;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);overflow:hidden;
+  background:radial-gradient(70% 90% at 50% 30%,rgba(201,168,106,.14),transparent 70%),linear-gradient(160deg,rgba(30,45,36,.82),rgba(7,12,9,.92))}
+.fam-art img.fam-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;filter:saturate(.96) contrast(1.02)}
+.fam-art::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(4,8,6,.34),rgba(4,8,6,0) 28%,rgba(4,8,6,.16) 62%,rgba(7,12,9,.92))}
+.fam-art::before{content:"";position:absolute;inset:9px;border:1px solid rgba(201,168,106,.16);z-index:3;pointer-events:none}
+.fam-glyph{position:relative;z-index:1;font-family:var(--serif);font-size:54px;color:rgba(238,217,168,.9);text-shadow:0 6px 24px rgba(0,0,0,.7)}
+.fam-seal{position:absolute;right:12px;bottom:9px;z-index:4;font-size:8.5px;color:rgba(240,220,174,.75);letter-spacing:.2em;writing-mode:vertical-rl;text-shadow:0 2px 10px rgba(0,0,0,.9)}
+.fam-body{padding:12px 14px 13px;display:flex;flex-direction:column;flex:1}
+.fam-top{display:flex;align-items:center;gap:8px}
+.fam-name{font-family:var(--serif);font-size:20px;color:#f0e2c8;letter-spacing:.1em}
+.fam-house{font-size:10px;color:var(--muted);margin-top:3px}
+.fam-desc{font-size:10.5px;color:#94a096;line-height:1.65;margin-top:7px}
+.fam-mods{font-size:9px;color:#a89470;line-height:1.7;margin-top:auto;padding-top:8px;border-top:1px solid rgba(201,168,106,.1)}
+.fam.sel{border-color:rgba(201,168,106,.72);box-shadow:0 0 0 1px rgba(201,168,106,.15) inset,0 10px 30px rgba(0,0,0,.5)}
+.fam.sel .fam-art{background:radial-gradient(70% 90% at 50% 30%,rgba(201,168,106,.24),transparent 70%),linear-gradient(160deg,rgba(42,60,48,.92),rgba(9,15,11,.96))}
+.cr-dots{display:flex;gap:6px;justify-content:center;margin:2px 0 14px}
+.cr-dots i{width:5px;height:5px;transform:rotate(45deg);border:1px solid rgba(201,168,106,.35);transition:.2s}
+.cr-dots i.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(201,168,106,.4)}
+.boot-bottom{margin-top:14px}
+
+/* 剧情图：参考页的 75vw 大图 */
+.scene-art-wrap{height:72vw;min-height:235px;max-height:360px;margin:8px 15px 0;border:1px solid rgba(201,168,106,.18);position:relative;overflow:hidden;background:#08100c}
+.scene-art-wrap .sa-bg{z-index:0}
+.scene-art-wrap .sa-bg svg{position:absolute;inset:0;width:100%;height:100%}
+.scene-art-wrap .sa-bg .bg-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:1}
+.scene-art-wrap .sa-figure{width:68%;max-width:270px;height:100%;bottom:0;z-index:2}
+.scene-art-wrap .sa-figure .sa-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;z-index:3}
+.scene-art-wrap .sa-fade{z-index:3}
+.scene-inner{padding-top:2px}
+
+/* 立绘图片：叠在占位之上，缺图自动隐藏 */
+.portrait img{z-index:2}
+.portrait .pt-name,.portrait .pt-tag{z-index:3}
+.portrait svg.pt-svg{z-index:0}
+.avatar .portrait{position:absolute;inset:0}
+.avatar .portrait img{width:100%;height:100%;object-fit:cover;object-position:center 18%;z-index:2}
+.avatar .portrait svg.pt-svg{z-index:0}
+
+/* 绿色调覆盖硬编码暖褐 */
+.card{background:linear-gradient(180deg,rgba(17,26,21,.92),rgba(7,12,9,.94))}
+.tabbar{background:linear-gradient(180deg,rgba(6,10,8,.94),rgba(5,9,7,.98))}
+.sheet{background:linear-gradient(180deg,#111a15,#070b09)}
+.menu-item{color:#cdd8cf}
+.scene{background:linear-gradient(180deg,#060b08,#040706 70%)}
+.scene-head{background:rgba(5,9,7,.9)}
+.ending{background:radial-gradient(110% 50% at 50% 0%,rgba(142,47,47,.2),transparent 60%),linear-gradient(180deg,#07100c,#040705 70%)}
+.create{background:linear-gradient(180deg,#0a100d,#050907)}
+
+/* 剧情页 · 沿用深色主调，只让首图与底色贴合场景图 */
+.scene{background:linear-gradient(180deg,#08120e,#050b08 68%)}
+.scene-art-wrap{height:auto;aspect-ratio:1.508;min-height:0;max-height:340px;margin:10px 15px 0}
+.scene-art-wrap .sa-fade{background:linear-gradient(180deg,rgba(4,8,6,.14) 0%,rgba(4,8,6,0) 22%,rgba(4,8,6,.08) 60%,rgba(6,11,8,.62) 100%)}
+.scene-art-wrap:not(.with-figure) .sa-label{top:12px;bottom:auto;left:14px;opacity:.55}
+.scene-art-wrap:not(.with-figure) .sa-label b{font-size:19px}
+.scene-art-wrap.kind-shanggong:not(.with-figure) .sa-label{top:auto;bottom:12px;left:14px;opacity:1}
+.scene-art-wrap.kind-shanggong:not(.with-figure) .sa-label b{color:#f6e9cf;text-shadow:0 2px 12px rgba(0,0,0,.95),0 0 26px rgba(0,0,0,.7)}
+.scene-art-wrap.kind-shanggong:not(.with-figure) .sa-label span{color:rgba(214,190,148,.85)}
+.scene-art-wrap.kind-shanggong .sa-fade{background:linear-gradient(180deg,rgba(4,8,6,.08) 0%,rgba(4,8,6,0) 30%,rgba(6,11,8,.18) 70%,rgba(5,9,7,.72) 100%)}
+.scene-inner{margin-top:0;padding-top:16px}
+
+@media(max-width:360px){
+  .attr span{font-size:10px}
+  .attr b{font-size:14px}
+  .ch-title{font-size:26px}
+  .place .p-name{font-size:15px}
+  .tab .tab-l{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* =========================================================
+   封面重做：夺凤
+   全屏封面图 + 左上竖排书法题名 + 底部信息层
+   ========================================================= */
+.boot-art{background:#0b0807}
+.boot-veil{z-index:6;background:
+  linear-gradient(90deg,rgba(4,3,3,.72) 0%,rgba(4,3,3,.34) 30%,rgba(4,3,3,0) 56%),
+  linear-gradient(180deg,rgba(4,3,3,.44) 0%,rgba(4,3,3,.06) 15%,rgba(4,3,3,0) 30%,rgba(4,3,3,.26) 44%,rgba(4,3,3,.58) 56%,rgba(4,3,3,.86) 68%,rgba(5,4,4,.97) 80%,#050404 92%)}
+.boot-inner{position:relative;z-index:8;height:100%;display:flex;flex-direction:column;justify-content:flex-start;
+  overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
+  padding:calc(env(safe-area-inset-top) + 26px) 24px calc(env(safe-area-inset-bottom) + 20px)}
+.boot-inner::-webkit-scrollbar{display:none;width:0;height:0}
+.cv-head{flex:0 0 auto;position:relative}
+.cv-kicker{display:flex;align-items:center;justify-content:center;gap:9px;font-size:10px;letter-spacing:.26em;color:rgba(240,220,174,.76);
+  text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.9)}
+.cv-kicker::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,rgba(201,168,106,.9),rgba(201,168,106,0))}
+.cv-kicker::after{content:"";width:22px;height:1px;background:linear-gradient(270deg,rgba(201,168,106,.9),rgba(201,168,106,0))}
+.cv-title{display:flex;align-items:flex-start;gap:14px;margin-top:9px}
+.cv-glyphs{height:clamp(182px,25vh,238px);width:auto;display:block;flex:0 0 auto}
+.cv-side{position:absolute;right:6px;top:104px;writing-mode:vertical-rl;font-family:var(--serif);font-size:11.5px;letter-spacing:.44em;
+  color:#f2e2c2;text-shadow:0 0 6px rgba(0,0,0,.95),0 0 16px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,1)}
+
+.boot-bottom{position:relative;width:auto;margin-top:auto;padding:30px 0 2px;text-align:center}
+.boot-quote{font-family:var(--serif);font-size:13px;line-height:1.95;letter-spacing:.05em;color:rgba(238,228,208,.96);
+  text-align:center;margin:0 0 16px;text-shadow:0 2px 14px rgba(0,0,0,.95),0 0 30px rgba(0,0,0,.85)}
+.boot-quote span{color:rgba(240,220,174,.78)}
+.name-field{flex-direction:column;justify-content:center;align-items:center;gap:7px;max-width:260px;margin-left:auto;margin-right:auto;
+  border-bottom-color:rgba(201,168,106,.52);padding-bottom:10px;margin-bottom:14px}
+.name-field input{flex:0 0 auto;width:100%;text-align:center}
+.name-field input::placeholder{color:rgba(226,212,188,.4)}
+.boot-minor{margin-top:13px;justify-content:center;gap:26px}
+.boot-tags{margin-top:16px}
+@media(max-height:700px){
+  .cv-glyphs{height:158px}
+  .cv-title{gap:11px}
+  
+  .boot-veil{background:
+    linear-gradient(90deg,rgba(4,3,3,.72) 0%,rgba(4,3,3,.3) 32%,rgba(4,3,3,0) 58%),
+    linear-gradient(180deg,rgba(4,3,3,.46) 0%,rgba(4,3,3,0) 24%,rgba(4,3,3,.3) 34%,rgba(4,3,3,.66) 44%,rgba(4,3,3,.9) 56%,rgba(5,4,4,.98) 68%,#050404 82%)}
+  .boot-quote{font-size:11.5px;margin-bottom:11px}
+  .boot-tags{margin-top:10px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="ambient"></div>
+  <canvas id="petals"></canvas>
+  <div class="grain"></div>
+
+  <!-- 开场 -->
+  <section id="boot" class="boot">
+    <div class="boot-art" id="bootArt">
+      <div class="moon"></div>
+      <svg class="palace" viewBox="0 0 480 780" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="skyfade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1c1311"/><stop offset="1" stop-color="#070505"/>
+          </linearGradient>
+          <linearGradient id="roofg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#3a2620"/><stop offset="1" stop-color="#160f0d"/>
+          </linearGradient>
+          <linearGradient id="wallg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a1a17"/><stop offset="1" stop-color="#0d0808"/>
+          </linearGradient>
+          <linearGradient id="mtn" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#17100f"/><stop offset="1" stop-color="#090606"/>
+          </linearGradient>
+        </defs>
+        <rect width="480" height="780" fill="url(#skyfade)" opacity="0"/>
+        <path d="M0 520 L70 472 L128 506 L196 438 L268 508 L330 462 L400 512 L480 470 L480 620 L0 620Z" fill="url(#mtn)" opacity=".8"/>
+        <g opacity=".5">
+          <path d="M120 590 Q240 528 360 590 L346 606 Q240 552 134 606Z" fill="url(#roofg)"/>
+          <rect x="176" y="600" width="128" height="52" fill="url(#wallg)"/>
+          <path d="M196 600 h88 v34 h-88z" fill="#120c0b"/>
+          <path d="M212 600 h56 v52 h-56z" fill="#0a0606"/>
+        </g>
+        <g>
+          <path d="M42 664 Q98 606 240 590 Q382 606 438 664 L420 680 Q240 620 60 680Z" fill="url(#roofg)"/>
+          <path d="M60 680 Q240 620 420 680 L404 692 Q240 635 76 692Z" fill="#0d0807"/>
+          <rect x="86" y="692" width="308" height="88" fill="url(#wallg)"/>
+          <path d="M96 692 h288 v8 h-288z" fill="#3a2620" opacity=".7"/>
+          <path d="M104 708 h272" stroke="#4a332a" stroke-width="1" opacity=".5"/>
+          <path d="M198 780 v-58 q0-24 42-24 q42 0 42 24 v58z" fill="#090505"/>
+          <path d="M208 780 v-52 q0-17 32-17 q32 0 32 17 v52z" fill="#160e0c"/>
+          <path d="M64 780 h48 v-64 h-48z" fill="#0c0707"/>
+          <path d="M368 780 h48 v-64 h-48z" fill="#0c0707"/>
+          <g stroke="#5b3b2c" stroke-width="1" opacity=".55">
+            <path d="M64 716 v64M88 716 v64M368 716 v64M392 716 v64"/>
+          </g>
+          <g fill="#c9a86a" opacity=".38">
+            <rect x="224" y="704" width="32" height="14" rx="1"/>
+            <path d="M218 704 h44 l-4-10 h-36z"/>
+          </g>
+          <g fill="#c9a86a" opacity=".3">
+            <rect x="112" y="712" width="8" height="14"/><rect x="360" y="712" width="8" height="14"/>
+          </g>
+        </g>
+        <g opacity=".55">
+          <path d="M-10 780 L-10 700 Q30 690 58 716 L58 780Z" fill="#0a0706"/>
+          <path d="M490 780 L490 694 Q446 684 418 714 L418 780Z" fill="#0a0706"/>
+          <path d="M-10 700 Q20 640 66 646 L58 716 Q30 690 -10 700Z" fill="#130d0b"/>
+          <path d="M490 694 Q462 636 414 644 L418 714 Q446 684 490 694Z" fill="#130d0b"/>
+        </g>
+        <g fill="#c9a86a" opacity=".2">
+          <circle cx="240" cy="560" r="1.2"/><circle cx="150" cy="620" r="1"/><circle cx="330" cy="610" r="1"/>
+          <circle cx="90" cy="550" r="1"/><circle cx="400" cy="570" r="1"/>
+        </g>
+      </svg>
+      <div class="lantern l1"></div>
+      <div class="lantern l2"></div>
+      <div class="lantern l3"></div>
+    </div>
+    <div class="boot-veil"></div>
+    <div class="boot-frame"></div>
+    <div class="boot-inner">
+      <div class="cv-head">
+        <div class="cv-kicker">大雍 · 承平二十一年 · 春</div>
+        <div class="cv-title">
+          <svg class="cv-glyphs" viewBox="57 20 943 1925" role="img" aria-label="夺凤">
+            <defs>
+              <linearGradient id="cvG" gradientUnits="userSpaceOnUse" x1="440" y1="20" x2="620" y2="1945">
+                <stop offset="0" stop-color="#fdf6e0"/>
+                <stop offset=".24" stop-color="#f0d9a4"/>
+                <stop offset=".52" stop-color="#d3ad6c"/>
+                <stop offset=".78" stop-color="#b08a4e"/>
+                <stop offset="1" stop-color="#8a6638"/>
+              </linearGradient>
+              <filter id="cvSh" x="-40%" y="-20%" width="180%" height="150%">
+                <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.72"/>
+              </filter>
+            </defs>
+            <g fill="url(#cvG)" filter="url(#cvSh)">
+              <path d="M517 316Q608 376 677 464Q699 492 730.0 513.0Q761 534 844.0 578.0Q927 622 953.5 640.5Q980 659 980.0 667.5Q980 676 968.0 680.0Q956 684 905.5 684.0Q855 684 825.0 678.5Q795 673 758.0 655.0Q721 637 689.5 608.0Q658 579 638 542Q596 463 555.0 424.5Q514 386 451 363Q433 372 414 375Q348 531 325.0 570.0Q302 609 256.5 642.0Q211 675 174.5 690.0Q138 705 122.0 705.0Q106 705 91.5 700.5Q77 696 77.0 689.5Q77 683 89 679Q133 667 190.0 619.5Q247 572 288.5 486.5Q330 401 337 375Q299 364 272.5 334.0Q246 304 246.0 298.0Q246 292 264 290Q322 284 377 265Q407 176 407.0 161.0Q407 146 403 138Q386 103 386.0 83.5Q386 64 397.0 52.0Q408 40 427.5 40.0Q447 40 472.0 55.5Q497 71 497 93Q497 97 488.0 125.5Q479 154 477 176Q511 190 553 188Q578 177 603.0 177.0Q628 177 645.0 193.0Q662 209 662.0 232.5Q662 256 653.0 264.5Q644 273 609 277Q568 281 517 316ZM497 214Q486 201 474 193Q468 216 467 230Q484 225 497 214ZM556 547Q580 544 594.5 544.0Q609 544 620.0 548.0Q631 552 643.5 573.5Q656 595 656.0 606.5Q656 618 637.0 616.5Q618 615 598.0 615.0Q578 615 558 623Q567 707 567.0 762.0Q567 817 562.0 873.0Q557 929 544.5 951.5Q532 974 525.5 982.5Q519 991 514.5 991.0Q510 991 502.5 986.5Q495 982 446.5 943.0Q398 904 368.0 876.5Q338 849 320.0 827.0Q302 805 297.0 793.5Q292 782 292 775Q292 754 313.5 738.5Q335 723 369.0 723.0Q403 723 422.5 740.0Q442 757 442 783Q442 820 386 820Q372 820 370 808Q365 787 339.5 787.0Q314 787 314.0 794.5Q314 802 346.0 828.0Q378 854 411.0 863.5Q444 873 462.0 873.0Q480 873 486.5 857.0Q493 841 493 798Q493 702 486 649Q404 694 368.5 694.0Q333 694 307.5 680.5Q282 667 282 652Q282 646 288 644Q323 633 343 621Q356 614 401.5 596.0Q447 578 482 567Q484 546 483 537Q467 515 448.5 504.5Q430 494 430.0 475.0Q430 456 445.0 446.0Q460 436 472.5 436.0Q485 436 508.5 448.0Q532 460 540.5 467.5Q549 475 551.5 490.0Q554 505 556 547ZM480 513Q482 508 482.0 500.0Q482 492 474.5 492.0Q467 492 467.0 499.5Q467 507 480 513Z"/>
+              <path d="M667 588Q760 654 844 731Q867 752 879.5 758.5Q892 765 909.0 766.5Q926 768 935.5 781.5Q945 795 945.0 813.0Q945 831 936.5 842.5Q928 854 883.0 864.5Q838 875 791 875Q720 875 680.5 843.0Q641 811 616.0 761.5Q591 712 591 630Q591 578 596.0 501.0Q601 424 609.5 354.0Q618 284 618.0 245.5Q618 207 614.5 192.0Q611 177 598.5 177.0Q586 177 572.5 187.0Q559 197 552 214Q536 250 499.5 282.0Q463 314 444.0 329.5Q425 345 399.5 346.5Q374 348 358.0 359.5Q342 371 318 398Q290 458 274 476Q252 501 252 566Q252 611 262.0 644.0Q272 677 272.0 712.0Q272 747 256.0 783.5Q240 820 209.0 837.5Q178 855 171.5 855.0Q165 855 165 846Q165 826 158 802Q154 788 154 772Q154 715 203 592Q192 532 192 476Q192 382 222 311Q237 275 237.0 255.0Q237 235 247.0 235.0Q257 235 288.5 261.5Q320 288 323 339Q387 273 438.5 228.5Q490 184 528.0 155.0Q566 126 575.0 122.0Q584 118 591 118Q610 118 649.0 139.5Q688 161 701.5 176.0Q715 191 715.0 207.5Q715 224 710 239Q696 285 673.0 422.5Q650 560 650 613Q650 693 678.0 745.5Q706 798 782 798Q817 798 817.0 788.0Q817 778 779.5 725.5Q742 673 667 588ZM206 676Q200 690 200.0 700.0Q200 710 202.5 710.0Q205 710 207.5 703.0Q210 696 210.0 688.0Q210 680 206 676ZM503 583Q553 634 564.5 657.0Q576 680 576 722Q576 740 565.0 740.0Q554 740 524.0 724.0Q494 708 458 680Q416 739 380 739Q359 739 334 717L290 679Q281 671 281.0 668.0Q281 665 286.0 665.0Q291 665 301.0 667.5Q311 670 321 670Q356 670 388 624Q372 604 346.0 586.0Q320 568 281 568Q271 568 271.0 562.0Q271 556 293.5 542.0Q316 528 340.5 528.0Q365 528 422 541Q425 528 425.0 521.0Q425 514 418.0 515.0Q411 516 404 516Q367 516 337.0 495.0Q307 474 307.0 455.5Q307 437 337 434Q389 429 419 383Q424 375 437.0 370.0Q450 365 470.5 365.0Q491 365 520.5 389.0Q550 413 550 442Q550 461 533.0 495.0Q516 529 503 583Z" transform="translate(-21,1050)"/>
+            </g>
+          </svg>
+          <div class="cv-side">六宫升位录</div>
+        </div>
+      </div>
+      <div class="boot-bottom">
+        <p class="boot-quote">朱墙之内，恩宠是刀，位分是命。<br><span>你要做的，是从一枚棋子，走到执棋的人。</span></p>
+        <label class="name-field">
+          <span class="nf-label">闺 名</span>
+          <input id="nameInput" maxlength="6" placeholder="如：沈昭宁" autocomplete="off" spellcheck="false">
+        </label>
+        <button class="btn-main" id="btnStart">入 局</button>
+        <div class="boot-minor">
+          <button id="btnContinue" hidden>续 前 缘</button>
+          <button id="btnGallery">结 局 图 鉴</button>
+          <button id="btnHelp">玩 法</button>
+        </div>
+        <div class="boot-tags"><span>八阶位分</span><i></i><span>二十四月</span><i></i><span>六处产业</span><i></i><span>十六结局</span></div>
+        <div class="boot-foot">竖屏体验 · 进度自动保存于本机</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 开局 -->
+  <section id="create" class="screen create" hidden>
+    <header class="sub-head">
+      <button class="icon-back" id="btnBackBoot">‹</button>
+      <div><h2>择 身 世</h2><p>你从哪一扇门，走进这座宫城</p></div>
+    </header>
+    <div class="create-scroll">
+      <div class="create-name">以 <b id="crName">—</b> 之名，入宫待选</div>
+      <div class="fam-list" id="famList"></div>
+      <div class="cr-dots" id="famDots"></div>
+      <div class="roll-panel">
+        <div class="roll-head"><h3>根 骨 · 天 资</h3><button id="btnRoll" class="mini-btn">重掷 <i id="rollLeft">3</i></button></div>
+        <div class="attr-list" id="attrList"></div>
+        <div class="roll-note">家世决定起点与月例；容貌、体质、智慧、才华、交际决定你能走多远。<br>另有一项隐藏的<em>心机</em>，入宫后方知深浅。</div>
+      </div>
+      <button class="btn-main" id="btnCreate" disabled>落 子 · 开 局</button>
+      <div class="cr-note">每月五点行动力 · 每一点都要算</div>
+    </div>
+  </section>
+
+  <!-- 主界面 -->
+  <section id="game" class="screen game" hidden>
+    <header class="topbar">
+      <div class="tb-left">
+        <div class="avatar" id="tbAvatar">答</div>
+        <div class="tb-name"><b id="tbName">—</b><span id="tbRank">答应 · 储秀宫偏殿</span></div>
+      </div>
+      <div class="tb-right">
+        <span class="ch-pill" id="tbChapter">第一章 · 入局</span>
+        <button class="menu-btn" id="btnMenu" aria-label="菜单"><i></i><i></i><i></i></button>
+      </div>
+    </header>
+    <div class="statusbar">
+      <div class="ap"><span class="ap-label">行 动</span><div class="ap-dots" id="apDots"></div><b id="apNum">5/5</b></div>
+      <div class="money"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#c9a86a" stroke-width="1.1"/><path d="M12 7v10M9 9.6c0-1.2 1.3-2 3-2s2.6.8 2.6 1.8c0 2.6-5.6 1.5-5.6 4.1 0 1 1.2 1.7 2.9 1.7" stroke="#c9a86a" stroke-width="1"/></svg><b id="stMoney">0</b><small>两</small></div>
+    </div>
+    <div class="attrs" id="tbAttrs"></div>
+    <div class="tri" id="tbTri"></div>
+    <main class="main" id="main"></main>
+    <button id="fabNight" class="fab-climax" type="button"><span class="fc-k">入夜</span><b>月 结</b></button>
+    <nav class="tabbar" id="tabbar">
+      <button class="tab on" data-tab="palace"><span class="tab-g">舆</span><span class="tab-l">舆图</span></button>
+      <button class="tab" data-tab="estate"><span class="tab-g">产</span><span class="tab-l">产业</span></button>
+      <button class="tab" data-tab="scheme"><span class="tab-g">谋</span><span class="tab-l">宫斗</span></button>
+      <button class="tab" data-tab="people"><span class="tab-g">人</span><span class="tab-l">人物</span></button>
+      <button class="tab" data-tab="archive"><span class="tab-g">卷</span><span class="tab-l">卷宗</span></button>
+    </nav>
+  </section>
+
+  <!-- 剧情 -->
+  <section id="scene" class="scene" hidden>
+    <header class="scene-head">
+      <button id="scBack" class="sc-back">‹ 退 出</button>
+      <span id="scCh" class="sc-ch"></span>
+      <span id="scLoc" class="sc-loc"></span>
+    </header>
+    <div class="scene-scroll">
+      <div id="scArtWrap" class="scene-art-wrap"></div>
+      <div class="scene-inner">
+        <div class="scene-kicker" id="scKicker"></div>
+        <h2 id="scTitle" class="scene-title"></h2>
+        <div id="scBody" class="scene-body"></div>
+        <div id="scChoices" class="scene-choices"></div>
+        <div id="scNote" class="scene-note"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 结局 -->
+  <section id="ending" class="ending" hidden></section>
+
+  <!-- 弹层 -->
+  <div id="sheet" class="sheet-wrap" hidden>
+    <div class="sheet-mask" id="sheetMask"></div>
+    <div class="sheet">
+      <div class="sheet-grip"></div>
+      <div class="sheet-body" id="sheetBody"></div>
+    </div>
+  </div>
+
+  <!-- 立绘大图 -->
+  <div id="lb" class="lb" hidden><img id="lbImg" alt=""></div>
+
+  <div id="toast" class="toast"></div>
+</div>
+<script>
+'use strict';
+/* =========================================================
+   夺凤 · 六宫升位录
+   数据 / 规则 / 渲染 / 剧情
+   ========================================================= */
+const SAVE_KEY='fengque_save_v1';
+const GAL_KEY='fengque_gallery_v1';
+
+/* 立绘接入位：默认指向 images/ 下同名文件。
+   把图片按《立绘清单.md》命名丢进 images/ 即可自动替换，无需改代码；
+   缺图时自动回退到内置水墨占位，不会出现裂图。 */
+const ART={
+  boot:'img/cdefcc2b1cc4.webp',
+  map:'img/85e2e50cd793.webp',
+  player:'',emperor:'img/9a49209292ee.webp',
+  xiao:'img/3546fa7756be.webp',murong:'img/904119b6cec5.webp',liu:'img/32244691dc4a.webp',
+  su:'img/75c07285c6d8.webp',ye:'img/44499b3eb69f.webp',bai:'img/9a8b17a6dc80.webp',
+  shen:'img/29c3a1e83b58.webp',an:'img/50cc151ff6de.webp',gu:'img/3c3e70029456.webp',
+  cui:'img/84e034016888.webp',lu:'img/675cb1fb2225.webp',xiaoyun:'img/f59e98fc2659.webp',
+  guanyue:'',banmian:'',gunv:'',
+  bg_hall:'img/f67019dc135c.webp',bg_garden:'img/9024d90a1829.webp',bg_taiyi:'img/a3e3c35dcfc7.webp',bg_xiefang:'img/96127511f28e.webp',bg_yaopu:'img/1e2853a56ead.webp',bg_xiangpu:'img/e46555c0ff55.webp',bg_chazhuang:'img/03ac14649ba2.webp',bg_shufang:'img/3690c1b4ea94.webp',bg_yinlou:'img/30646f4fd89a.webp',bg_temple:'img/c8364a1a1a45.webp',
+  bg_shanggong:'img/02ce63358ffe.webp',bg_cold:'img/b47eadd51dc0.webp',bg_night:'images/bg_night.jpg'
+};
+
+ART.bg_night_low='img/56e52345811f.webp';
+ART.bg_night_mid='img/ce1bf68ea9b3.webp';
+ART.bg_night_high='img/62772e429279.webp';
+/* 预解码全部内嵌插画，避免切换时出现底色/线稿空窗 */
+(function(){
+  const imgs=[];
+  Object.keys(ART).forEach(k=>{
+    const src=ART[k];
+    if(!src||src.indexOf('data:')!==0)return;
+    const im=new Image();
+    im.src=src;
+    if(im.decode)im.decode().catch(()=>{});
+    imgs.push(im);
+  });
+  window.__ART_IMGS=imgs;
+})();
+/* 人物配色 */
+const PAL={
+  player:['#5d1b22','#170a0c'],emperor:['#3c2b13','#120c06'],
+  xiao:['#5d1b22','#180b0d'],murong:['#43234a','#160b18'],liu:['#1f3f3a','#0a1512'],
+  su:['#25304a','#0c0e15'],ye:['#4a3220','#160f0a'],bai:['#333a3d','#101314'],
+  shen:['#3c3326','#12100b'],an:['#4a2430','#160b0f'],gu:['#2b3b32','#0b120e'],
+  cui:['#3c2c3a','#120c11'],lu:['#2b3138','#0c0f12'],xiaoyun:['#3a2f1f','#120e08'],
+  guanyue:['#2f2a44','#0e0c16'],banmian:['#2a2a2a','#0c0c0c'],gunv:['#2d3a22','#0d1209']
+};
+
+const FAM_ART={
+  han:"img/2257feb1a0a4.webp",
+  shu:"img/13c942aec66a.webp",
+  shang:"img/196fbe4eb1ec.webp",
+  wu:"img/b266f0e5a124.webp",
+  shi:"img/523a9a15a6c7.webp"
+};
+
+/* 寒门立绘：随位分晋升由素到华 */
+const HAN_RANK_ART=[
+'img/1b734aff88ac.webp',
+'img/e9dd645a155a.webp',
+'img/ac06820a9d38.webp',
+'img/7e7023bb4ea0.webp',
+'img/5392c8073906.webp'
+];
+/* 书香立绘：随位分晋升由素到华 */
+const SHU_RANK_ART=[
+'img/20be551cb2a4.webp',
+'img/416c5939e0a4.webp',
+'img/ac9cc2f99f5e.webp',
+'img/84b3be2cd868.webp',
+'img/432a840552f5.webp'
+];
+/* 商女立绘：随位分晋升由素到华 */
+const SHANG_RANK_ART=[
+'img/0aad0a53fe45.webp',
+'img/ec93c38b2d90.webp',
+'img/4e2373aa50c2.webp',
+'img/630f8334757d.webp',
+'img/0feff6a52bd0.webp'
+];
+const FAM_FACE={
+  han:"img/bd12b821913b.webp",
+  shu:"img/144d62f4fec0.webp",
+  shang:"img/422de276c08b.webp",
+  wu:"img/27075bd9e143.webp",
+  shi:"img/714d93d4d9d7.webp"
+};
+
+const FAMILIES=[
+  {id:'han',name:'寒门',glyph:'寒',house:'县学教谕之女',diff:'难',diffCls:'hard',fam:[16,26],moneyBonus:0,artY:'24%',
+   mods:{wit:9,talent:7,social:-4,charm:2},desc:'家世低微，却读得满腹诗书。'},
+  {id:'shu',name:'书香',glyph:'书',house:'翰林侍读之女',diff:'中',diffCls:'',fam:[40,52],moneyBonus:0,artY:'26%',
+   mods:{wit:6,talent:9,charm:-2},desc:'清贵门第，最不缺的是笔墨与规矩。'},
+  {id:'shang',name:'皇商',glyph:'商',house:'江南织造皇商之女',diff:'中',diffCls:'',fam:[54,64],moneyBonus:260,artY:'26%',
+   mods:{social:9,charm:2,wit:-4},desc:'银子堆出来的体面，也是最软的靠山。'},
+  {id:'wu',name:'武将',glyph:'武',house:'镇北将军之女',diff:'中',diffCls:'',fam:[62,72],moneyBonus:0,artY:'32%',
+   mods:{health:13,charm:-4,social:2},desc:'边关风沙养出的筋骨，宫里未必识货。'},
+  {id:'shi',name:'世家',glyph:'世',house:'三朝元老·英国公嫡女',diff:'易',diffCls:'easy',fam:[78,88],moneyBonus:0,artY:'20%',
+   mods:{charm:8,social:7,talent:2,health:-4,wit:-2},desc:'生来就在牌桌上，只是牌未必由你出。'}
+];
+
+const ATTRS=[
+  ['family','家世'],['charm','容貌'],['health','体质'],
+  ['wit','智慧'],['talent','才华'],['social','交际']
+];
+
+const RANKS=[
+  {name:'答应',res:'储秀宫·偏殿',salary:12,maids:1,build:1,fame:0,lv:0,pw:0},
+  {name:'常在',res:'储秀宫·东厢',salary:25,maids:2,build:2,fame:60,lv:2,pw:20},
+  {name:'贵人',res:'景仁宫·西配殿',salary:45,maids:3,build:3,fame:150,lv:4,pw:45},
+  {name:'嫔',res:'景仁宫·主位',salary:80,maids:4,build:4,fame:300,lv:7,pw:75},
+  {name:'妃',res:'承乾宫',salary:140,maids:6,build:5,fame:500,lv:11,pw:110},
+  {name:'贵妃',res:'翊坤宫',salary:230,maids:8,build:6,fame:780,lv:16,pw:150},
+  {name:'皇贵妃',res:'永寿宫',salary:350,maids:10,build:6,fame:1100,lv:22,pw:195},
+  {name:'皇后',res:'坤宁宫',salary:520,maids:12,build:6,fame:1500,lv:28,pw:240}
+];
+
+const CHAPTERS=[
+  {no:'第一章',title:'入局',seal:'入',from:1,to:4,place:'紫禁城 · 储秀宫',
+   desc:'宫门在身后合上。你从一枚棋子开始，先看清这座城，再想怎么活下去。'},
+  {no:'第二章',title:'承宠',seal:'宠',from:5,to:8,place:'紫禁城 · 养心殿',
+   desc:'恩宠是这宫里最硬的通货，也是最薄的一张纸。你要把它攥在手里。'},
+  {no:'第三章',title:'风波',seal:'波',from:9,to:12,place:'紫禁城 · 六宫',
+   desc:'流言、毒药、笑脸。风波从不单独来，它总带着一个你没想到的人。'},
+  {no:'第四章',title:'争锋',seal:'争',from:13,to:16,place:'紫禁城 · 翊坤宫',
+   desc:'六宫的棋盘收紧了。每一步都要见血，每一句话都要留三分。'},
+  {no:'第五章',title:'废立',seal:'废',from:17,to:20,place:'紫禁城 · 坤宁宫',
+   desc:'中宫病重，凤位空悬。有人开始押注，有人开始磨刀。'},
+  {no:'终章',title:'凤位',seal:'凤',from:21,to:24,place:'紫禁城 · 丹陛',
+   desc:'最后四个月。你要么坐上凤位，要么被凤位碾过去。'}
+];
+function chapterOf(m){
+  return CHAPTERS.find(c=>m>=c.from&&m<=c.to)||CHAPTERS[CHAPTERS.length-1];
+}
+
+const BUILDINGS=[
+  {id:'xiefang',name:'撷芳阁',glyph:'绸',desc:'采买江南绸缎，转手便是利。',base:12,up:80,rank:0},
+  {id:'yaopu',name:'百草圃',glyph:'药',desc:'名贵药材，太医院也来问价。',base:16,up:120,rank:1},
+  {id:'xiangpu',name:'凝香铺',glyph:'香',desc:'胭脂水粉，六宫女儿的钱最易赚。',base:22,up:180,rank:2},
+  {id:'chazhuang',name:'云腴茶庄',glyph:'茶',desc:'贡茶私售，来往皆是体面人。',base:30,up:260,rank:3},
+  {id:'shufang',name:'漱玉书坊',glyph:'书',desc:'书画润笔、刻印经卷，清贵也生财。',base:40,up:360,rank:4},
+  {id:'yinlou',name:'聚宝银楼',glyph:'银',desc:'宫外银号，日进斗金，也最招眼。',base:52,up:500,rank:5}
+];
+
+const RETAINERS=[
+  {id:'shen',name:'沈昭宁',title:'端嫔·旧识',glyph:'沈',power:30,cost:120,desc:'端方持重，善理宫务。',effect:'全局产业产出 +8%'},
+  {id:'an',name:'安素',title:'教坊司歌姬',glyph:'安',power:28,cost:100,desc:'歌喉婉转，最会看人脸色。',effect:'献艺帝宠 +2，宫斗成功率 +3%'},
+  {id:'gu',name:'顾清和',title:'太医院医正',glyph:'顾',power:25,cost:150,desc:'医术精湛，可保安胎。',effect:'难产风险 -10%'},
+  {id:'cui',name:'崔姑姑',title:'尚宫局女官',glyph:'崔',power:40,cost:200,desc:'宫中老人，人脉通达。',effect:'每月威望 +2，打点收益 +30%'},
+  {id:'lu',name:'陆锋',title:'御前侍卫',glyph:'陆',power:55,cost:300,desc:'身手不凡，暗处行事。',effect:'宫斗成功率 +6%'},
+  {id:'xiaoyun',name:'萧昀',title:'内务府总管',glyph:'萧',power:65,cost:420,desc:'算盘打得比谁都精。',effect:'全局产业产出 +12%'}
+];
+
+const RIVALS=[
+  {id:'xiao',name:'萧婉',rank:'皇后',glyph:'萧',title:'中宫·坤宁宫',wit:92,social:88,charm:80,favor:68,power:100,bond:-25,
+   desc:'三朝元老的侄女，笑意从不达眼底。'},
+  {id:'murong',name:'慕容华',rank:'贵妃',glyph:'慕',title:'翊坤宫',wit:66,social:72,charm:93,favor:55,power:85,bond:-15,
+   desc:'艳色压六宫，脾气也压六宫。'},
+  {id:'liu',name:'柳如烟',rank:'妃',glyph:'柳',title:'承乾宫',wit:78,social:60,charm:82,favor:30,power:60,bond:0,
+   desc:'以才情侍君，最恨旁人比她多读一本书。'},
+  {id:'su',name:'苏念',rank:'嫔',glyph:'苏',title:'景仁宫',wit:60,social:75,charm:70,favor:18,power:40,bond:5,
+   desc:'笑起来一团和气，手里却总捏着别人的把柄。'},
+  {id:'ye',name:'叶知秋',rank:'贵人',glyph:'叶',title:'咸福宫',wit:70,social:55,charm:65,favor:12,power:25,bond:10,
+   desc:'入宫三年，不争不抢，活得像一株影子。'},
+  {id:'bai',name:'白露',rank:'常在',glyph:'白',title:'储秀宫',wit:45,social:50,charm:60,favor:8,power:15,bond:15,
+   desc:'新入宫的小主，眼睛还很亮。'}
+];
+
+const NPCS={
+  emperor:{name:'萧承稷',title:'承平帝 · 养心殿'},
+  guanyue:{name:'观月娘子',title:'冷宫 · 秘药'},
+  banmian:{name:'半面郎君',title:'冷宫 · 交易'},
+  gunv:{name:'蛊女',title:'冷宫 · 情蛊'}
+};
+
+const ITEMS={
+  bloodpin:{name:'血玉簪',glyph:'簪',desc:'下一次宫斗成功率 +20%。',use:'下次宫斗前自动生效。'},
+  bonecomb:{name:'枯骨梳',glyph:'梳',desc:'最得宠的妃嫔帝宠 -20、势力 -10，自身业障 +12，并染上每月帝宠 -2 的诅咒。'},
+  edict:{name:'无字诏书',glyph:'诏',desc:'威望 +150，业障 +25。捷径都标着价。'},
+  dress:{name:'旧嫁衣',glyph:'衣',desc:'威望 +80，体质 -10。穿上它，像替另一个死人活。'},
+  pill:{name:'秘药·安胎',glyph:'药',desc:'有孕时使用，本次生产难产风险 -15%。'}
+};
+
+const PLACES=[
+  {id:'kunning',name:'坤宁宫',sub:'晨省请安',glyph:'礼',ap:1,cost:0,minRank:0,art:'hall',mx:53,my:29,
+   desc:'向皇后请安，博一个“知礼”的名声。',tag:'威望 · 帝宠'},
+  {id:'garden',name:'御花园',sub:'随驾偶遇',glyph:'遇',ap:1,cost:0,minRank:0,art:'garden',mx:31,my:32,
+   desc:'花影深处，或许能撞见那抹明黄。',tag:'帝宠 · 奇遇'},
+  {id:'changxin',name:'长信殿',sub:'献艺 · 练舞',glyph:'艺',ap:1,cost:0,minRank:0,art:'hall',mx:77,my:30,
+   desc:'一曲一舞，博帝王片刻驻目；也可留在偏殿练舞。',tag:'帝宠 · 才华'},
+  {id:'shanggong',name:'尚宫局',sub:'银钱打点',glyph:'谋',ap:1,cost:40,minRank:0,art:'hall',mx:31,my:65,
+   desc:'宫里的路，多半是银子铺出来的。',tag:'威望 · 情报'},
+  {id:'taiyi',name:'太医院',sub:'问诊 · 养颜',glyph:'医',ap:1,cost:15,minRank:0,art:'taiyi',mx:15,my:30,
+   desc:'调理身子，也求一剂养颜方。',tag:'体质 · 容貌'},
+  {id:'fotang',name:'佛堂',sub:'焚香祈福',glyph:'佛',ap:1,cost:20,minRank:0,art:'temple',mx:78,my:22,
+   desc:'香火压得住业障，压不住人心。',tag:'消业障'},
+  {id:'lenggong',name:'冷宫',sub:'夜探禁地',glyph:'禁',ap:1,cost:0,minRank:2,art:'cold',mx:8,my:44,
+   desc:'宫墙最深处，住着被抹去名字的人。',tag:'隐秘 · 危险'}
+];
+
+const ENDINGS=[
+  {id:'queen_glory',title:'母仪天下',glyph:'凤',sub:'END · 中宫',tone:'gold',
+   body:'册后大典那日，你从丹陛下一步步走上去。满朝命妇俯首，六宫敛声。帝王将凤印放到你手里，掌心是热的，目光却隔着一整座江山。\n你终于坐上了那个位置。至于这座宫城从此姓什么——史官会写，而你说了算。'},
+  {id:'queen_lonely',title:'凤位孤影',glyph:'孤',sub:'END · 中宫',tone:'dark',
+   body:'你成了皇后。凤冠很重，坤宁宫很空。帝王偶尔来，坐一炷香，说几句不咸不淡的话。\n你赢下了所有名分，却没赢下一个人。夜半风过檐铃，你听见的仍是当年入宫时，那一声长长的唱名。'},
+  {id:'favor',title:'宠冠六宫',glyph:'宠',sub:'END · 盛宠',tone:'red',
+   body:'那一夜之后，帝王的步辇再没绕过你的宫门。赏赐流水一样抬进来，连皇后见了你也要先笑三分。\n你不再是那个需要算着银子过日子的答应。你成了这座宫里最烫手的一团火——只是火，总有烧尽的时候。'},
+  {id:'power',title:'权倾后宫',glyph:'权',sub:'END · 权柄',tone:'gold',
+   body:'你的手伸进了内务府的账册、尚宫局的名册、甚至前朝的几封奏折。六宫用度先过你的眼，官员升迁先问你的意思。\n帝王乐于有人替他管这些琐碎。你在他眼里是最好用的刀，而刀，是不需要被爱的。'},
+  {id:'empty',title:'椒房独守',glyph:'空',sub:'END · 冷落',tone:'dark',
+   body:'位分有了，宫室也换了大的，可长夜太长。敬事房的灯笼一次次从门前经过，去向别人的院子。\n你数着更漏，忽然想起入宫前母亲说的话：这宫里最不缺的，就是体面。体面两个字，原来这么冷。'},
+  {id:'mother',title:'母凭子贵',glyph:'子',sub:'END · 子嗣',tone:'jade',
+   body:'孩子满月那日，帝王亲自赐了名。你抱着襁褓，忽然觉得从前那些算计都轻了。\n母凭子贵，这四个字俗气，却实在。你未必是最得宠的那个，但你的名字，已经写进了这座宫城的下一朝。'},
+  {id:'taihou',title:'太后之路',glyph:'太',sub:'END · 后福',tone:'gold',
+   body:'许多年后，新帝登基，尊你为太后。你从帘后看出去，满殿朱紫，皆是你当年用银子和人心一寸寸铺出来的路。\n有人骂你狠，有人敬你稳。你只是抬手，让宫人把帘子再放低一些——这江山，终究是熬出来的。'},
+  {id:'goldcage',title:'金玉囚笼',glyph:'笼',sub:'END · 富贵',tone:'gold',
+   body:'你的库房堆满了金银，衣箱里是穿不完的蜀锦。可你膝下空空，宫门一关，连个唤你“母亲”的人都没有。\n富贵是真的，寂寞也是真的。你用半生换来的东西，最后只能拿来陪自己。'},
+  {id:'deep',title:'深宫寂寂',glyph:'寂',sub:'END · 平常',tone:'dark',
+   body:'你安安稳稳地老在这座宫里。没有大起，也没有大落。偶尔有新入宫的小主来请安，怯生生地叫一声“娘娘”。\n你看着她们，像看见当年的自己。你想说些什么，最后只摆摆手：去吧，仔细脚下。'},
+  {id:'rich',title:'富甲六宫',glyph:'富',sub:'END · 财帛',tone:'gold',
+   body:'位分不高，银子却不少。六宫的娘娘们背地里笑你满身铜臭，转头又要来你的铺子里赊账。\n你不在意。恩宠会散，位分会倒，只有银子，是真正握在手里的东西。'},
+  {id:'clan',title:'家族荣光',glyph:'族',sub:'END · 门楣',tone:'jade',
+   body:'你父亲升了官，兄弟得了荫封，族中姊妹的婚事也一桩桩体面起来。家书里说，祠堂重新修了，你的名字被写进最亮的那一格。\n你为家族熬白了头，家族也因你挺直了腰。这笔账，究竟谁欠谁，已经算不清了。'},
+  {id:'cold',title:'冷宫余生',glyph:'冷',sub:'END · 幽闭',tone:'dark',
+   body:'东窗事发。帝王没有赐死，只命人收了你的册宝，将你迁进冷宫。\n宫门从外面落了锁，野草从砖缝里长出来。你每天听见远处的丝竹，知道又有人正在承宠。你曾也是那样。'},
+  {id:'white',title:'白绫三尺',glyph:'殇',sub:'END · 赐死',tone:'red',
+   body:'圣旨到的时候，你正在梳头。来传旨的太监声音很轻，像怕惊着谁。\n三尺白绫悬在梁上。你最后看了一眼铜镜里的自己，忽然笑了：这一局，到底还是算漏了一步。'},
+  {id:'death',title:'香消玉殒',glyph:'殁',sub:'END · 身死',tone:'dark',
+   body:'产房里的血一直止不住。你听见稳婆在哭，听见有人在喊“保大”，声音越来越远。\n你想起入宫那年的春天，御花园的桃花开得很好。你还没来得及去看第二眼。'},
+  {id:'escape',title:'出宫归隐',glyph:'隐',sub:'END · 远遁',tone:'jade',
+   body:'宫门在身后合上。你换下宫装，把名字和位分一起留在那座城里，跟着一个戴半张面具的人，走进江南的雨。\n后来有人在茶楼里听说书，说宫里曾经有位娘娘，敢把天戳个窟窿。你低头抿了一口茶，没有作声。'},
+  {id:'dream',title:'宫墙一梦',glyph:'梦',sub:'END · 寻常',tone:'dark',
+   body:'你终究没有走到最高处。位分不高不低，银子不多不少，恩宠来了又走。\n多年后你站在宫墙下看落日，想起这二十四年像一场很长的梦。梦里你争过、恨过、也算计过。醒来时，朱墙还是那道朱墙。'}
+];
+
+const ACHS=[
+  {id:'clean',name:'六宫无怨',cond:s=>s.karma<=10},
+  {id:'four',name:'四子登科',cond:s=>s.children>=4},
+  {id:'wealth',name:'富可敌国',cond:s=>s.money>=5000},
+  {id:'deepmind',name:'心机似海',cond:s=>s.scheme>=80},
+  {id:'phoenix',name:'凤位加身',cond:s=>s.rank>=7},
+  {id:'nopollution',name:'不染尘埃',cond:s=>!s.flags.usedScheme},
+  {id:'climb',name:'步步生莲',cond:s=>s.rank>=5&&s.month<=18},
+  {id:'hidden',name:'冷宫余客',cond:s=>!!s.flags.metHidden}
+];
+
+let S=null;
+let currentTab='palace';
+let busy=false;
+let nightLock=false;
+let sceneResolve=null;
+let sceneCfg=null;
+let toastTimer=null;
+let sel={familyId:null,attrs:null,scheme:0,rerolls:3};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const fmt=n=>Math.max(0,Math.round(n)).toLocaleString('zh-CN');
+const CN=['零','一','二','三','四','五','六','七','八','九','十','十一','十二'];
+const monthCN=m=>{
+  const y=Math.floor((m-1)/12)+1,x=(m-1)%12+1;
+  return '承平'+(20+y)+'年 · '+['正','二','三','四','五','六','七','八','九','十','冬','腊'][x-1]+'月';
+};
+const shortMonth=m=>{
+  const x=(m-1)%12+1;
+  return ['正','二','三','四','五','六','七','八','九','十','冬','腊'][x-1]+'月';
+};
+const rankNow=()=>RANKS[S.rank];
+const nextRank=()=>RANKS[S.rank+1]||null;
+const hasRetainer=id=>S.retainers.indexOf(id)>=0;
+const totalPower=()=>S.retainers.reduce((n,id)=>n+(RETAINERS.find(r=>r.id===id)?.power||0),0);
+const totalBuildLv=()=>BUILDINGS.reduce((n,b)=>n+(S.buildings[b.id]||0),0);
+const assignedTo=b=>S.assign[b]||[];
+const assignedCount=b=>assignedTo(b).length;
+const isAssigned=id=>Object.keys(S.assign).some(b=>S.assign[b].indexOf(id)>=0);
+
+function globalProd(){
+  let m=1;
+  if(hasRetainer('shen'))m+=.08;
+  if(hasRetainer('xiaoyun'))m+=.12;
+  return m;
+}
+function buildingIncome(b){
+  const lv=S.buildings[b.id]||0;
+  if(!lv)return 0;
+  return Math.round(b.base*lv*(1+.2*assignedCount(b.id))*globalProd());
+}
+function totalIncome(){
+  let n=0;
+  BUILDINGS.forEach(b=>{n+=buildingIncome(b)});
+  n+=rankNow().salary;
+  return n;
+}
+function schemeBonus(){
+  let n=0;
+  if(hasRetainer('an'))n+=3;
+  if(hasRetainer('lu'))n+=6;
+  if(S.flags.intel)n+=5;
+  if(S.flags.bloodpin)n+=20;
+  return n;
+}
+function birthRiskBase(){
+  let r=S.attrs.health<=30?30:(S.attrs.health<45?16:8);
+  if(hasRetainer('gu'))r-=10;
+  if(S.flags.safeBirth)r-=15;
+  return clamp(r,2,40);
+}
+function rivalOf(id){return RIVALS.find(r=>r.id===id)}
+function showToast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
+}
+function save(){
+  if(!S)return;
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}
+}
+function loadSave(){
+  try{return JSON.parse(localStorage.getItem(SAVE_KEY)||'null')}catch(e){return null}
+}
+function loadGal(){
+  try{return JSON.parse(localStorage.getItem(GAL_KEY)||'{"endings":[],"achs":[]}')}catch(e){return{endings:[],achs:[]}}
+}
+function saveGal(g){
+  try{localStorage.setItem(GAL_KEY,JSON.stringify(g))}catch(e){}
+}
+
+/* ---------- 水墨立绘占位 ---------- */
+function figureSVG(gender){
+  if(gender==='m'){
+    return `<svg class="pt-svg" viewBox="0 0 100 130" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <circle cx="50" cy="30" r="28" fill="none" stroke="rgba(201,168,106,.16)"/>
+      <path d="M26 130 Q30 78 50 68 Q70 78 74 130Z" fill="var(--pa)"/>
+      <path d="M38 130 Q40 88 50 82 Q60 88 62 130Z" fill="var(--pb)" opacity=".85"/>
+      <path d="M50 86 V78" stroke="#dcc0a6" stroke-width="7"/>
+      <circle cx="50" cy="55" r="13" fill="#ddbea3"/>
+      <path d="M35 54 Q34 31 50 31 Q66 31 65 54 Q64 68 50 70 Q36 68 35 54Z" fill="#12100f"/>
+      <path d="M50 27 q-17 2 -18 22 q9 -8 18 -8 q9 0 18 8 q-1 -20 -18 -22Z" fill="#0a0908"/>
+      <path d="M38 31 h24 l-3 -8 h-18z" fill="#c9a86a" opacity=".85"/>
+      <path d="M42 25 h16 l-2 -5 h-12z" fill="#c9a86a" opacity=".6"/>
+      <path d="M38 96 Q50 102 62 96" fill="none" stroke="#c9a86a" stroke-width="1" opacity=".7"/>
+      <path d="M26 130 Q20 112 14 118" stroke="var(--pa)" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+      <path d="M74 130 Q80 112 86 118" stroke="var(--pa)" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+    </svg>`;
+  }
+  return `<svg class="pt-svg" viewBox="0 0 100 130" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <circle cx="50" cy="31" r="27" fill="none" stroke="rgba(201,168,106,.16)"/>
+    <path d="M27 130 Q31 80 50 70 Q69 80 73 130Z" fill="var(--pa)"/>
+    <path d="M38 130 Q40 88 50 82 Q60 88 62 130Z" fill="var(--pb)" opacity=".9"/>
+    <path d="M50 86 V78" stroke="#e3c5ab" stroke-width="6"/>
+    <circle cx="50" cy="55" r="12.5" fill="#e5c6ac"/>
+    <path d="M36 54 Q35 33 50 33 Q65 33 64 54 Q63 69 50 71 Q37 69 36 54Z" fill="#141010"/>
+    <path d="M50 27 q-17 2 -18 23 q9 -9 18 -9 q9 0 18 9 q-1 -21 -18 -23Z" fill="#0a0808"/>
+    <path d="M50 24 v-7" stroke="#c9a86a" stroke-width="1.4"/>
+    <path d="M44 25 h12" stroke="#c9a86a" stroke-width="1.2"/>
+    <circle cx="50" cy="20" r="1.8" fill="#c9a86a"/>
+    <path d="M36 56 q-3 16 3 26" stroke="#0a0808" stroke-width="5" fill="none" opacity=".9"/>
+    <path d="M64 56 q3 16 -3 26" stroke="#0a0808" stroke-width="5" fill="none" opacity=".9"/>
+    <path d="M39 97 Q50 103 61 97" fill="none" stroke="#c9a86a" stroke-width="1" opacity=".8"/>
+    <path d="M27 130 Q20 111 14 117" stroke="var(--pa)" stroke-width="7" stroke-linecap="round" opacity=".9"/>
+    <path d="M73 130 Q80 111 86 117" stroke="var(--pa)" stroke-width="7" stroke-linecap="round" opacity=".9"/>
+  </svg>`;
+}
+
+function portraitHTML(key,name,sub,opts){
+  const o=opts||{};
+  const p=PAL[key]||['#3a2a24','#120c0a'];
+  const gender=o.gender||(key==='emperor'?'m':'f');
+  const src=ART[key]||'';
+  const inner=(src?'':figureSVG(gender)+`<span class="pt-glyph">${esc((name||'').charAt(0))}</span>`)
+    +(src?`<img src="${esc(src)}" alt="${esc(name)}" decoding="sync" onerror="this.style.display='none'">`:'');
+  return `<div class="portrait" style="--pa:${p[0]};--pb:${p[1]}">
+    ${inner}
+    ${o.noName?'':`<div class="pt-name">${esc(name)}</div>`}
+    ${o.tag===false?'':`<div class="pt-tag">${esc(sub||'立绘待补')}</div>`}
+  </div>`;
+}
+
+/* ---------- 场景底图 ---------- */
+function sceneBG(kind){
+  const k=kind||'hall';
+  if(k==='garden'){
+    return `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="400" height="240" fill="#0a1210"/>
+      <circle cx="300" cy="64" r="34" fill="#e9d3a3" opacity=".55"/>
+      <circle cx="300" cy="64" r="52" fill="none" stroke="#e9d3a3" stroke-width=".6" opacity=".15"/>
+      <path d="M0 180 Q80 148 160 176 Q240 204 400 166 L400 240 L0 240Z" fill="#0c1512"/>
+      <path d="M0 206 Q110 176 220 206 Q320 232 400 204 L400 240 L0 240Z" fill="#070c0a"/>
+      <g stroke="#2a2018" stroke-width="5" fill="none" opacity=".9">
+        <path d="M44 240 Q52 164 40 96 M40 150 Q14 128 4 104 M42 132 Q72 112 94 92 M40 110 Q26 92 20 70"/>
+      </g>
+      <g fill="#c4736a" opacity=".55">
+        <circle cx="12" cy="102" r="2.4"/><circle cx="20" cy="68" r="2"/><circle cx="92" cy="90" r="2.6"/>
+        <circle cx="70" cy="110" r="1.8"/><circle cx="30" cy="124" r="1.6"/>
+      </g>
+      <path d="M252 150 q-6-26 18-34 q26 8 22 34z" fill="#151d19"/>
+      <path d="M244 150 h64 l-8 10 h-48z" fill="#1b241f"/>
+      <g stroke="#c9a86a" stroke-width="1" opacity=".3"><path d="M276 116 v-12"/><circle cx="276" cy="101" r="3"/></g>
+      <path d="M0 222 Q100 210 200 222 Q300 234 400 222 L400 240 L0 240Z" fill="#050908" opacity=".8"/>
+    </svg>`;
+  }
+  if(k==='temple'){
+    return `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="400" height="240" fill="#0d0b08"/>
+      <circle cx="200" cy="96" r="58" fill="#c9a86a" opacity=".06"/>
+      <path d="M200 44 q-17 0 -17 17 q0 17 17 17 q17 0 17-17 q0-17-17-17Z" fill="#2c2318" opacity=".9"/>
+      <path d="M170 130 q30-28 60 0 l12 68 h-84z" fill="#241b12" opacity=".9"/>
+      <circle cx="200" cy="86" r="44" fill="none" stroke="#c9a86a" stroke-width="1" opacity=".25"/>
+      <g fill="#c9a86a" opacity=".25">
+        <rect x="118" y="144" width="7" height="34"/><rect x="275" y="144" width="7" height="34"/>
+      </g>
+      <g fill="#e8b56a">
+        <ellipse cx="121" cy="142" rx="4" ry="8" opacity=".85"/><ellipse cx="278" cy="142" rx="4" ry="8" opacity=".85"/>
+      </g>
+      <g stroke="#9b8a70" stroke-width="1" fill="none" opacity=".22">
+        <path d="M100 196 q10-20 0-38 q-10-18 0-32"/><path d="M300 196 q-10-20 0-38 q10-18 0-32"/>
+      </g>
+      <path d="M0 206 h400 v34 h-400z" fill="#0a0806"/>
+    </svg>`;
+  }
+  if(k==='cold'){
+    return `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="400" height="240" fill="#090c0e"/>
+      <circle cx="310" cy="54" r="26" fill="#a8b4b8" opacity=".22"/>
+      <path d="M0 176 L58 150 L96 168 L150 138 L206 172 L262 146 L318 170 L400 142 L400 240 L0 240Z" fill="#0d1113"/>
+      <rect x="20" y="140" width="118" height="82" fill="#111619"/>
+      <path d="M20 140 h118 v7 h-118z" fill="#1c2428"/>
+      <path d="M30 154 h20 v20 h-20z M60 154 h20 v20 h-20z M92 154 h18 v20 h-18z M30 184 h20 v24 h-20z M92 184 h18 v24 h-18z" fill="#080b0c"/>
+      <path d="M272 240 L272 150 q0-12 12-12 q12 0 12 12 v90z" fill="#0a0d0f"/>
+      <g stroke="#4c5a60" stroke-width=".7" opacity=".4">
+        <path d="M40 20 l-10 34 M110 8 l-10 40 M190 22 l-10 34 M260 6 l-10 40 M330 18 l-10 34 M380 30 l-10 28"/>
+        <path d="M70 50 l-8 26 M150 44 l-8 28 M230 52 l-8 26 M300 42 l-8 30 M360 56 l-8 24"/>
+      </g>
+      <g stroke="#20272b" stroke-width="4" fill="none">
+        <path d="M330 240 q-4-40 8-70 m-8 30 q-20-14-26-30 m26 16 q18-12 22-26"/>
+      </g>
+      <path d="M0 232 Q120 220 240 232 Q320 240 400 230 L400 240 L0 240Z" fill="#050708"/>
+    </svg>`;
+  }
+  if(k==='night'){
+    return `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="400" height="240" fill="#0d0908"/>
+      <path d="M0 0 h90 q22 60 8 130 q-12 68 6 110 h-104z" fill="#1b1210"/>
+      <path d="M400 0 h-90 q-22 60 -8 130 q12 68 -6 110 h104z" fill="#1b1210"/>
+      <path d="M90 0 q18 70 6 128 q-10 58 4 112" stroke="#c9a86a" stroke-width="1" fill="none" opacity=".22"/>
+      <path d="M310 0 q-18 70 -6 128 q10 58 -4 112" stroke="#c9a86a" stroke-width="1" fill="none" opacity=".22"/>
+      <rect x="150" y="150" width="100" height="90" fill="#17100e"/>
+      <path d="M144 150 h112 l-10 -14 h-92z" fill="#241814"/>
+      <g fill="#e8b56a" opacity=".85"><ellipse cx="126" cy="152" rx="4" ry="8"/><ellipse cx="274" cy="152" rx="4" ry="8"/></g>
+      <circle cx="126" cy="150" r="24" fill="#c9a86a" opacity=".06"/>
+      <circle cx="274" cy="150" r="24" fill="#c9a86a" opacity=".06"/>
+      <g stroke="#c9a86a" stroke-width=".6" opacity=".13"><path d="M200 0 v150 M170 40 h60 M160 90 h80"/></g>
+    </svg>`;
+  }
+  return `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="400" height="240" fill="#0d0908"/>
+    <rect x="34" y="18" width="150" height="158" fill="#120d0b" stroke="#33241b" stroke-width="1"/>
+    <g stroke="#6b5338" stroke-width="1" opacity=".42">
+      <path d="M34 55 h150 M34 92 h150 M34 129 h150 M34 166 h150 M72 18 v158 M110 18 v158 M148 18 v158"/>
+    </g>
+    <circle cx="108" cy="92" r="22" fill="#e9d3a3" opacity=".16"/>
+    <path d="M34 18 h150 v10 h-150z" fill="#241814"/>
+    <path d="M34 176 h150 v10 h-150z" fill="#241814"/>
+    <rect x="298" y="96" width="5" height="82" fill="#4a3a2a"/>
+    <ellipse cx="300" cy="92" rx="5" ry="10" fill="#e8b56a"/>
+    <circle cx="300" cy="88" r="26" fill="#c9a86a" opacity=".07"/>
+    <rect x="256" y="170" width="90" height="12" fill="#1d1411"/>
+    <path d="M206 240 q28-36 94-36 q66 0 100 36z" fill="#100b0a" opacity=".7"/>
+    <path d="M0 206 h400 v34 h-400z" fill="#0a0706"/>
+  </svg>`;
+}
+
+function sceneBgHTML(kind){
+  const k=kind||'hall';
+  /* 寝殿随位分变化：答应/常在用简素居所，贵人/嫔用中等陈设，妃以上用华贵寝殿 */
+  const chamber=k==='night'&&S?'bg_night_'+(S.rank>=4?'high':S.rank>=2?'mid':'low'):'';
+  const src=(chamber&&ART[chamber])||ART['bg_'+k]||'';
+  return src?`<img class="bg-photo" src="${esc(src)}" alt="" decoding="sync" onerror="this.style.display='none'">`:sceneBG(k);
+}
+function sceneArtHTML(kind,who){
+  if(who){
+    const r=RIVALS.find(x=>x.id===who)||RETAINERS.find(x=>x.id===who)||NPCS[who];
+    const key=who;
+    const name=r?r.name:'';
+    const title=r?(r.title||r.rank||''):'';
+    const p=PAL[key]||['#3a2a24','#120c0a'];
+    const src=ART[key]||'';
+    const inner=(src?'':`<svg viewBox="0 0 200 280" preserveAspectRatio="xMidYMax meet" style="width:100%;height:100%;display:block">
+          <circle cx="100" cy="70" r="62" fill="none" stroke="rgba(201,168,106,.16)"/>
+          <path d="M42 280 Q50 160 100 134 Q150 160 158 280Z" fill="${p[0]}"/>
+          <path d="M74 280 Q78 178 100 164 Q122 178 126 280Z" fill="${p[1]}" opacity=".9"/>
+          <path d="M100 172 V152" stroke="#e3c5ab" stroke-width="11"/>
+          <circle cx="100" cy="112" r="25" fill="#e5c6ac"/>
+          <path d="M72 110 Q70 66 100 66 Q130 66 128 110 Q126 140 100 144 Q74 140 72 110Z" fill="#141010"/>
+          <path d="M100 54 q-34 4 -36 46 q18 -18 36 -18 q18 0 36 18 q-2 -42 -36 -46Z" fill="#0a0808"/>
+          <path d="M100 48 v-14" stroke="#c9a86a" stroke-width="2.4"/>
+          <path d="M86 50 h28" stroke="#c9a86a" stroke-width="2"/>
+          <circle cx="100" cy="40" r="3.4" fill="#c9a86a"/>
+          <path d="M72 114 q-6 32 6 52" stroke="#0a0808" stroke-width="9" fill="none" opacity=".9"/>
+          <path d="M128 114 q6 32 -6 52" stroke="#0a0808" stroke-width="9" fill="none" opacity=".9"/>
+          <path d="M76 200 Q100 212 124 200" fill="none" stroke="#c9a86a" stroke-width="1.6" opacity=".8"/>
+          <path d="M42 280 Q28 238 18 248" stroke="${p[0]}" stroke-width="14" stroke-linecap="round" opacity=".9"/>
+          <path d="M158 280 Q172 238 182 248" stroke="${p[0]}" stroke-width="14" stroke-linecap="round" opacity=".9"/>
+        </svg>`)+(src?`<img class="sa-photo" src="${esc(src)}" alt="${esc(name)}" decoding="sync" onerror="this.style.display='none'">`:'');
+    return `<div class="sa-bg">${sceneBgHTML(kind||'hall')}</div>
+      <div class="sa-fade"></div>
+      <div class="sa-figure">${inner}</div>
+      <div class="sa-label"><b>${esc(name)}</b><span>${esc(title)}</span></div>
+      <div class="sa-seal">${esc((name||'').charAt(0))}</div>`;
+  }
+  const label={
+    hall:'殿 宇',garden:'御 花 园',temple:'佛 堂',cold:'冷 宫',night:'寝 殿',shanggong:'尚 宫 局'
+  }[kind]||'宫 阙';
+  return `<div class="sa-bg">${sceneBgHTML(kind)}</div><div class="sa-fade"></div>
+    <div class="sa-label"><b>${label}</b><span>深 宫 · 承 平 年 间</span></div>`;
+}
+
+/* ---------- 开局 ---------- */
+function rollAttrs(fam){
+  const a={family:rnd(fam.fam[0],fam.fam[1])};
+  ['charm','health','wit','talent','social'].forEach(k=>{
+    a[k]=clamp(rnd(40,68)+(fam.mods[k]||0),12,96);
+  });
+  return a;
+}
+function renderCreate(){
+  const fam=FAMILIES.find(f=>f.id===sel.familyId)||FAMILIES[0];
+  const idx=FAMILIES.findIndex(f=>f.id===sel.familyId);
+  $('crName').textContent=($('nameInput').value||'待定').trim()||'待定';
+  const rail=$('famList');
+  if(rail.dataset.ready!=='1'){
+    rail.innerHTML=FAMILIES.map(f=>`
+    <button class="fam${f.id===sel.familyId?' sel':''}" data-fam="${f.id}">
+      <span class="fam-art">${FAM_ART[f.id]
+        ?`<img class="fam-img" src="${FAM_ART[f.id]}" alt="${f.name}" decoding="sync" style="object-position:center ${f.artY||'12%'}">`
+        :`<span class="fam-glyph">${f.glyph}</span>`}<span class="fam-seal">${f.name}</span></span>
+      <span class="fam-body">
+        <span class="fam-top"><span class="fam-name">${f.name}</span><span class="fam-diff ${f.diffCls}">${f.diff}</span></span>
+        <span class="fam-house">${f.house}</span>
+        <span class="fam-desc">${f.desc}</span>
+        <span class="fam-mods">家世 ${f.fam[0]}–${f.fam[1]} · ${Object.keys(f.mods).map(k=>ATTRS.find(a=>a[0]===k)[1]+(f.mods[k]>0?'+':'')+f.mods[k]).join(' ')}${f.moneyBonus?' · 私房 +'+f.moneyBonus+'两':''}</span>
+      </span>
+    </button>`).join('');
+    rail.dataset.ready='1';
+    rail.querySelectorAll('[data-fam]').forEach(b=>{
+      b.onclick=()=>{
+        sel.familyId=b.dataset.fam;
+        const f=FAMILIES.find(x=>x.id===sel.familyId);
+        sel.attrs=rollAttrs(f);
+        sel.scheme=clamp(rnd(10,26)+Math.floor(sel.attrs.wit/22),8,42);
+        renderCreate();
+      };
+    });
+  }
+  /* 只切选中态，不重建图片节点，避免身世图闪回兜底 */
+  rail.querySelectorAll('[data-fam]').forEach(b=>b.classList.toggle('sel',b.dataset.fam===sel.familyId));
+  if(idx>=0)rail.scrollLeft=idx*(rail.clientWidth||0);
+  $('famDots').innerHTML=FAMILIES.map((f,i)=>`<i class="${i===idx?'on':''}"></i>`).join('');
+  const attrs=sel.attrs||rollAttrs(fam);
+  $('attrList').innerHTML=ATTRS.map(([k,name])=>{
+    const v=attrs[k];
+    return `<div class="attr-row">
+      <span class="attr-k">${name}</span>
+      <span class="attr-bar"><i style="width:${v}%"></i></span>
+      <span class="attr-val ${v<35?'low':v>=80?'high':''}">${v}</span>
+    </div>`;
+  }).join('');
+  $('rollLeft').textContent=sel.rerolls;
+  $('btnRoll').disabled=sel.rerolls<=0||!sel.familyId;
+  $('btnCreate').disabled=!sel.familyId;
+}
+
+function startGame(){
+  const fam=FAMILIES.find(f=>f.id===sel.familyId);
+  const name=($('nameInput').value||'').trim()||'沈昭宁';
+  const a=Object.assign({},sel.attrs);
+  const rivals={},bonds={};
+  RIVALS.forEach(r=>{rivals[r.id]={favor:r.favor,power:r.power};bonds[r.id]=r.bond});
+  S={
+    name,fam:fam.id,month:1,ap:5,rank:0,
+    attrs:a,scheme:Number(sel.scheme)||20,
+    fame:Math.floor(a.family*0.7),money:a.family*5+(fam.moneyBonus||0),
+    favor:8,karma:0,children:0,pregnant:null,served:0,
+    buildings:{xiefang:1,yaopu:0,xiangpu:0,chazhuang:0,shufang:0,yinlou:0},
+    retainers:[],assign:{xiefang:[]},
+    rivals,bonds,items:[],log:[],flags:{},ended:null
+  };
+  save();
+  $('boot').hidden=true;$('create').hidden=true;$('game').hidden=false;
+  currentTab='palace';
+  renderGame();
+  setTimeout(()=>introScene(),220);
+}
+
+/* ---------- 数值渲染 ---------- */
+const sgn=n=>(n>0?'+':'')+n;
+function chipsHTML(chips){
+  if(!chips||!chips.length)return '';
+  return `<div class="eff-chips">${chips.map(c=>`<span class="eff ${c.cls||''}">${esc(c.t)}</span>`).join('')}</div>`;
+}
+function applyEff(e){
+  const chips=[];
+  if(!e)return chips;
+  ATTRS.forEach(([k,name])=>{
+    if(e[k]!==undefined&&isFinite(Number(e[k]))&&Number(e[k])!==0){
+      const before=S.attrs[k];
+      S.attrs[k]=clamp(S.attrs[k]+e[k],1,100);
+      const d=S.attrs[k]-before;
+      if(d)chips.push({t:name+' '+sgn(d),cls:d>0?'':'down'});
+    }
+  });
+  const addRes=(key,name,unit,max)=>{
+    if(e[key]===undefined||!isFinite(Number(e[key])))return;
+    const before=S[key];
+    S[key]=max===undefined?Math.max(0,S[key]+e[key]):clamp(S[key]+e[key],0,max);
+    const d=S[key]-before;
+    if(d)chips.push({t:name+' '+sgn(d)+(unit||''),cls:d>0?'gold':'down'});
+  };
+  addRes('fame','威望');
+  addRes('money','银两','两');
+  addRes('favor','帝宠',null,100);
+  addRes('karma','业障',null,100);
+  addRes('scheme','心机',null,100);
+  addRes('children','子嗣');
+  if(e.bond)for(const id in e.bond){
+    S.bonds[id]=clamp((S.bonds[id]||0)+e.bond[id],-100,100);
+    chips.push({t:rivalOf(id).name+' 好感 '+sgn(e.bond[id]),cls:e.bond[id]>0?'':'down'});
+  }
+  if(e.rfavor)for(const id in e.rfavor){
+    S.rivals[id].favor=clamp(S.rivals[id].favor+e.rfavor[id],0,100);
+    chips.push({t:rivalOf(id).name+' 帝宠 '+sgn(e.rfavor[id]),cls:e.rfavor[id]>0?'down':''});
+  }
+  if(e.rpower)for(const id in e.rpower){
+    S.rivals[id].power=clamp(S.rivals[id].power+e.rpower[id],0,120);
+    chips.push({t:rivalOf(id).name+' 势力 '+sgn(e.rpower[id]),cls:e.rpower[id]>0?'down':''});
+  }
+  if(e.item){
+    const list=Array.isArray(e.item)?e.item:[e.item];
+    list.forEach(id=>{if(ITEMS[id]&&S.items.indexOf(id)<0)S.items.push(id);chips.push({t:'获得 '+ITEMS[id].name,cls:'gold'})});
+  }
+  if(e.flag)for(const k in e.flag)S.flags[k]=e.flag[k];
+  if(e.log)S.log.unshift(e.log);
+  return chips;
+}
+function rankBarHTML(){
+  const r=rankNow(),n=nextRank();
+  if(!n){
+    return `<div class="rb-top"><span>威望 <b>${fmt(S.fame)}</b></span><span><b>皇后</b> · 凤位已极</span></div>
+      <div class="rb-track"><i style="width:100%"></i></div>
+      <div class="rb-conds"><span>六宫俯首</span><span>·</span><span>只待终局</span></div>`;
+  }
+  const pct=clamp(S.fame/n.fame*100,0,100);
+  const lvOk=totalBuildLv()>=n.lv,pwOk=totalPower()>=n.pw;
+  return `<div class="rb-top">
+      <span>威望 <b>${fmt(S.fame)}</b> <em>/ ${n.fame}</em></span>
+      <span>下一阶 <b>${n.name}</b> <em>月例 ${n.salary} 两</em></span>
+    </div>
+    <div class="rb-track"><i style="width:${pct}%"></i></div>
+    <div class="rb-conds">
+      <span class="${lvOk?'ok':'no'}">${lvOk?'✓':'✗'} 产业 ${totalBuildLv()}/${n.lv}</span>
+      <span class="${pwOk?'ok':'no'}">${pwOk?'✓':'✗'} 门客 ${totalPower()}/${n.pw}</span>
+      <span>宫女上限 ${n.maids}</span>
+    </div>`;
+}
+function renderGame(){
+  if(!S)return;
+  const r=rankNow(),ch=chapterOf(S.month);
+  /* 寒门 / 书香 / 皇商：头像随位分晋升，由素净到华贵 */
+  const rankArts={
+    han:typeof HAN_RANK_ART!=='undefined'?HAN_RANK_ART:null,
+    shu:typeof SHU_RANK_ART!=='undefined'?SHU_RANK_ART:null,
+    shang:typeof SHANG_RANK_ART!=='undefined'?SHANG_RANK_ART:null
+  };
+  const rankArt=rankArts[S.fam];
+  const rankIdx=S.rank>=5?4:S.rank>=4?3:S.rank>=3?2:S.rank>=2?1:0;
+  const face=rankArt?rankArt[rankIdx]:FAM_FACE[S.fam];
+  const rankFace=!!rankArt;
+  $('tbAvatar').innerHTML=face?`<img class="av-face${rankFace?' av-rank':''}" src="${face}" alt="" decoding="sync">`:portraitHTML('player',S.name,'',{tag:false,noName:true});
+  $('tbName').textContent=S.name;
+  $('tbRank').textContent=r.name+' · '+r.res;
+  $('tbChapter').textContent=ch.no+' · '+ch.title;
+  $('stMoney').textContent=fmt(S.money);
+  $('apDots').innerHTML=Array.from({length:5},(_,i)=>`<i class="${i<S.ap?'on':''}"></i>`).join('');
+  $('apNum').textContent=S.ap+'/5';
+  $('tbAttrs').innerHTML=[
+    ['charm','容貌'],['health','体质'],['wit','智慧'],['talent','才华'],['social','交际']
+  ].map(([k,n])=>`<div class="attr"><span>${n}</span><b>${S.attrs[k]}</b></div>`).join('');
+  $('tbTri').innerHTML=`<div><span>帝宠</span><b>${S.favor}</b></div>
+    <div><span>心机</span><b>${S.scheme}</b></div>
+    <div class="${S.karma>=40?'danger':''}"><span>业障</span><b>${S.karma}</b></div>`;
+  $('fabNight').classList.toggle('ready',S.ap<=0);
+  renderTab(false);
+}
+
+/* ---------- 五个页签 ---------- */
+function mapSVG(){
+  return `<svg class="map-svg" viewBox="0 0 480 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="480" height="520" fill="#08110d"/>
+    <path d="M0 0h480v520H0z" fill="url(#mapv)" opacity="0"/>
+    <g fill="none" stroke="#355043" stroke-width="1" opacity=".55">
+      <rect x="14" y="18" width="452" height="484"/>
+      <rect x="44" y="50" width="392" height="420"/>
+      <path d="M240 18v484M14 244h452M44 356h392"/>
+    </g>
+    <g fill="#0d1813" stroke="#3f5b4c" stroke-width="1">
+      <rect x="152" y="68" width="176" height="108"/>
+      <rect x="62" y="172" width="128" height="120"/>
+      <rect x="290" y="172" width="128" height="120"/>
+      <rect x="62" y="374" width="128" height="88"/>
+      <rect x="290" y="374" width="128" height="88"/>
+      <rect x="176" y="402" width="128" height="60"/>
+    </g>
+    <g fill="#17271e" stroke="#5a4630" stroke-width="1" opacity=".95">
+      <path d="M142 68h196l-16-18h-164z"/>
+      <path d="M52 172h148l-14-16h-120z"/>
+      <path d="M280 172h148l-14-16h-120z"/>
+      <path d="M52 374h148l-14-16h-120z"/>
+      <path d="M280 374h148l-14-16h-120z"/>
+    </g>
+    <ellipse cx="240" cy="300" rx="78" ry="38" fill="#0a1a18" stroke="#335048"/>
+    <path d="M172 300q34-12 68 0t68 0" fill="none" stroke="#4a6a5c" opacity=".45"/>
+    <path d="M176 292q32-9 64 0t64 0" fill="none" stroke="#4a6a5c" opacity=".28"/>
+    <g stroke="#263a30" stroke-width="9" fill="none" opacity=".7">
+      <path d="M240 176v86M240 338v64M240 462v24"/>
+      <path d="M126 244h56M298 244h56M126 430h50M304 430h50"/>
+    </g>
+    <g fill="#1b2b22" opacity=".95">
+      <circle cx="38" cy="120" r="13"/><circle cx="54" cy="144" r="9"/><circle cx="440" cy="112" r="12"/>
+      <circle cx="424" cy="138" r="8"/><circle cx="36" cy="330" r="11"/><circle cx="446" cy="330" r="12"/>
+      <circle cx="30" cy="470" r="14"/><circle cx="452" cy="466" r="13"/>
+    </g>
+    <g fill="#c4544a" opacity=".55">
+      <circle cx="214" cy="206" r="2"/><circle cx="266" cy="206" r="2"/><circle cx="214" cy="344" r="2"/>
+      <circle cx="266" cy="344" r="2"/><circle cx="100" cy="250" r="1.6"/><circle cx="380" cy="250" r="1.6"/>
+    </g>
+    <g fill="#c9a86a" opacity=".22">
+      <circle cx="240" cy="112" r="1.6"/><circle cx="240" cy="300" r="1.4"/><circle cx="240" cy="430" r="1.4"/>
+    </g>
+  </svg>`;
+}
+function mapPinHTML(p){
+  const locked=S.rank<p.minRank;
+  return `<button class="map-pin${locked?' locked':''}" style="left:${p.mx}%;top:${p.my}%" data-place="${p.id}">
+    <span class="pin-dot">${p.glyph}</span>
+    <span class="pin-name">${p.name}</span>
+    ${locked?'<span class="pin-lock">未解锁</span>':''}
+  </button>`;
+}
+function placeCard(p){
+  const locked=S.rank<p.minRank;
+  return `<button class="card place${locked?' locked':''}" data-place="${p.id}">
+    <span class="p-glyph">${p.glyph}</span>
+    <span class="p-main">
+      <span class="p-cost ${p.cost?'':'none'}">1点${p.cost?' · '+p.cost+'两':''}</span>
+      <span class="p-name">${p.name}<em>${p.sub}</em></span>
+      <span class="p-desc">${p.desc}</span>
+      <span class="p-tag">${p.tag}</span>
+    </span>
+    ${locked?`<span class="p-lock">晋 ${RANKS[p.minRank].name} 解锁</span>`:''}
+  </button>`;
+}
+function renderPalace(){
+  const ch=chapterOf(S.month);
+  const hint=S.ap<=0?'行动力已尽，该入夜了。':(S.pregnant?'你已有身孕，凡事量力而行。':'点舆图上的宫院，或从下方今日行止里选一件事。');
+  return `<div class="chapter-card card">
+    <div class="ch-head"><span>${ch.no} · ${String(S.month).padStart(2,'0')} / 24</span><span class="ch-seal">${ch.seal}</span></div>
+    <h2 class="ch-title">${ch.title}</h2>
+    <div class="ch-meta">${shortMonth(S.month)} · ${ch.place} · ${rankNow().name}</div>
+    <div class="ch-line">位分 · ${rankNow().name} · 月例 ${rankNow().salary} 两 · 宫女上限 ${rankNow().maids}</div>
+    <div class="ch-desc">${ch.desc}</div>
+    <div class="ch-foot">${rankBarHTML()}</div>
+  </div>
+  <div class="map-panel">
+    <div class="map-art">
+      ${ART.map?`<img class="map-img" src="${esc(ART.map)}" alt="" decoding="sync" onerror="this.style.display='none'">`:mapSVG()}
+      <div class="map-head">六宫舆图<small>点一处 · 行一事</small></div>
+      <div class="map-hint">行动 ${S.ap} / 5</div>
+      ${PLACES.map(mapPinHTML).join('')}
+    </div>
+    <div class="map-caption"><span>${rankNow().res}</span><span>${S.pregnant?'有孕 '+S.pregnant.m+' 月':'行动力 '+S.ap+'/5'}</span></div>
+  </div>
+  <div class="sec-head"><div><h2>今日行止</h2><p>${hint}</p></div><span class="sec-tag">${S.ap}/5 点</span></div>
+  <div class="place-grid">${PLACES.map(placeCard).join('')}</div>`;
+}
+
+function upCost(b){
+  const lv=S.buildings[b.id]||0;
+  if(lv===0)return b.up;
+  return Math.round(b.up*(1+lv*0.35));
+}
+function renderEstate(){
+  const income=totalIncome();
+  return `<div class="sec-head"><div><h2>六处产业</h2><p>银钱是宫里的底气</p></div><span class="sec-tag">月入 ${fmt(income)} 两</span></div>
+    <p class="section-hint">产业每月自动产出。升级提高产出，派驻门客可再增 <b>20%</b>；建筑总等级与门客战力决定了你能不能晋位。</p>
+    ${BUILDINGS.map(b=>{
+      const lv=S.buildings[b.id]||0;
+      const locked=S.rank<b.rank;
+      const incomeOne=buildingIncome(b);
+      const slots=[0,1,2,3].map(i=>{
+        const id=assignedTo(b.id)[i];
+        const r=id?RETAINERS.find(x=>x.id===id):null;
+        return `<span class="slot ${r?'filled':''}">${r?r.name:'空位'}</span>`;
+      }).join('');
+      if(locked){
+        return `<div class="card bld locked">
+          <div class="bld-ico">${ART['bg_'+b.id]?`<img class="bld-photo" src="${ART['bg_'+b.id]}" alt="" decoding="sync">`:sceneBG('hall')}<span>${b.glyph}</span></div>
+          <div class="bld-main"><div class="bld-top"><span class="bld-name">${b.name}</span></div>
+          <div class="bld-desc">${b.desc}</div>
+          <div class="bld-stats"><span>晋 <b>${RANKS[b.rank].name}</b> 后解锁</span></div></div>
+        </div>`;
+      }
+      return `<div class="card bld">
+        <div class="bld-ico">${ART['bg_'+b.id]?`<img class="bld-photo" src="${ART['bg_'+b.id]}" alt="" decoding="sync">`:sceneBG('hall')}<span>${b.glyph}</span></div>
+        <div class="bld-main">
+          <div class="bld-top"><span class="bld-name">${b.name}</span>
+            <span class="bld-lv">${Array.from({length:6},(_,i)=>`<i class="${i<lv?'on':''}"></i>`).join('')}</span>
+          </div>
+          <div class="bld-desc">${b.desc}</div>
+          <div class="bld-stats"><span>月产 <b>${fmt(incomeOne)}</b> 两</span><span>等级 <b>${lv}</b>/6</span>${assignedCount(b.id)?`<span><em>派驻 ${assignedCount(b.id)} 人</em></span>`:''}</div>
+          <div class="bld-slots">${slots}</div>
+        </div>
+        <div class="bld-btns">
+          ${lv>=6?'<span class="mini-act" style="opacity:.4">已满级</span>':`<button class="mini-act gold" data-bld-up="${b.id}">${lv?'升级':'修建'}<br>${fmt(upCost(b))}两</button>`}
+          <button class="mini-act" data-bld-assign="${b.id}">派驻</button>
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="info-card card">
+      <div class="info-top"><h3>产业总览</h3><span>总等级 ${totalBuildLv()} · 门客战力 ${totalPower()}</span></div>
+      <div class="meter gold"><i style="width:${clamp(totalBuildLv()/36*100,0,100)}%"></i></div>
+      <div class="info-body">全局加成：${hasRetainer('shen')?'沈昭宁 +8% ':''}${hasRetainer('xiaoyun')?'萧昀 +12% ':''}${hasRetainer('cui')?'崔姑姑 月威望+2 ':''}${(!hasRetainer('shen')&&!hasRetainer('xiaoyun')&&!hasRetainer('cui'))?'暂无（招揽门客可获增益）':''}</div>
+    </div>`;
+}
+
+function bondText(v){
+  if(v>=60)return '盟友';
+  if(v>=25)return '亲近';
+  if(v>=0)return '尚可';
+  if(v>=-30)return '疏远';
+  return '敌意';
+}
+function renderScheme(){
+  return `<div class="sec-head"><div><h2>宫斗博弈</h2><p>每一步都标着价</p></div><span class="sec-tag">心机 ${S.scheme} · 业障 ${S.karma}</span></div>
+    <p class="section-hint">成功率取决于你的智慧、交际、心机与对方属性。<b>业障</b>会累积，越高越容易招来反噬与东窗事发。</p>
+    ${RIVALS.map(r=>{
+      const rv=S.rivals[r.id];
+      const bond=S.bonds[r.id]||0;
+      return `<div class="card rival">
+        <div class="rv-art" data-big="${r.id}">${portraitHTML(r.id,r.name,r.rank,{tag:false})}</div>
+        <div class="rv-main">
+          <div class="rv-top"><span class="rv-name">${r.name}</span><span class="rv-rank">${r.rank}</span>
+            ${bond>=60?'<span class="ally-tag">盟友</span>':''}
+            <span class="rv-bond">${bondText(bond)} ${sgn(bond)}</span></div>
+          <div class="rv-bars">
+            <div class="rv-bar fav"><span>帝宠</span><i><b style="width:${rv.favor}%"></b></i><em>${rv.favor}</em></div>
+            <div class="rv-bar pw"><span>势力</span><i><b style="width:${rv.power}%"></b></i><em>${rv.power}</em></div>
+          </div>
+          <div class="rv-acts">
+            <button class="primary" data-rival="${r.id}">动 手</button>
+            <button data-gift="${r.id}">送礼 50两·1点</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="info-card card">
+      <div class="info-top"><h3>宫斗须知</h3><span>心机越高，胜算越大</span></div>
+      <div class="info-body">下毒：（智慧+交际）/2 − 目标智慧<br>造谣：智慧 − 目标交际<br>栽赃：需心机≥30，暴露风险更高<br>争宠：容貌+才华 对抗目标容貌<br>拉拢：抬升好感、交际 +1，好感≥60 结为盟友</div>
+    </div>`;
+}
+
+function renderPeople(){
+  return `<div class="sec-head"><div><h2>人物 · 门客</h2><p>谁能为你所用</p></div><span class="sec-tag">战力 ${totalPower()}</span></div>
+    <div class="card person" style="padding:10px 12px">
+      <div class="ps-art" data-big="emperor">${portraitHTML('emperor','萧承稷','当今 · 承平帝',{gender:'m',tag:false})}</div>
+      <div class="ps-main">
+        <div class="ps-top"><span class="ps-name">萧承稷</span><span class="ps-title">· 承平帝</span></div>
+        <div class="ps-meta"><span>帝宠 <b>${S.favor}</b></span><span>侍寝 <b>${S.served}</b> 次</span><span>子嗣 <b>${S.children}</b></span></div>
+        <div class="ps-meta" style="color:#7e7061">他的恩宠是这宫里最硬的通货。</div>
+      </div>
+    </div>
+    <p class="section-hint">招募门客可提升<b>门客总战力</b>（晋位门槛），派驻产业还能提高产出。同一门客只能驻一处。</p>
+    ${RETAINERS.map(r=>{
+      const own=hasRetainer(r.id);
+      const assigned=isAssigned(r.id);
+      return `<div class="card person">
+        <div class="ps-art" data-big="${r.id}">${portraitHTML(r.id,r.name,r.title,{tag:false})}</div>
+        <div class="ps-main">
+          <div class="ps-top"><span class="ps-name">${r.name}</span><span class="ps-title">· ${r.title}</span></div>
+          <div class="ps-meta"><span>战力 <b>${r.power}</b></span><span>${r.effect}</span></div>
+          <div class="ps-meta" style="color:#7e7061">${r.desc}</div>
+        </div>
+        <button class="ps-btn ${own?'own':''}" data-recruit="${r.id}" ${own?'disabled':''}>${own?(assigned?'已派驻':'已招募'):'招募<br>'+r.cost+'两'}</button>
+      </div>`;
+    }).join('')}
+  `;
+}
+
+function renderArchive(){
+  const n=nextRank();
+  return `<div class="sec-head"><div><h2>卷宗</h2><p>你的来路与去处</p></div><span class="sec-tag">${rankNow().name}</span></div>
+    <div class="card info-card">
+      <div class="info-top"><h3>位分 · ${rankNow().name}</h3><span>${rankNow().res}</span></div>
+      <div class="kv">
+        <div><span>月例</span><b>${rankNow().salary} 两</b></div>
+        <div><span>宫女人数</span><b>${rankNow().maids}</b></div>
+        <div><span>产业上限</span><b>${rankNow().build} 处</b></div>
+        <div><span>威望</span><b>${fmt(S.fame)}</b></div>
+      </div>
+      <div class="info-body">${n?`下一阶 <b>${n.name}</b>：威望 ${n.fame} · 产业 ${n.lv} 级 · 门客战力 ${n.pw}。三项齐备，入夜时自动晋位。`:'已至凤位，只待终局。'}</div>
+    </div>
+    <div class="card info-card">
+      <div class="info-top"><h3>业障</h3><span>${S.karma}/100</span></div>
+      <div class="meter"><i style="width:${S.karma}%"></i></div>
+      <div class="info-body">${S.karma>=70?'业障深重。夜半惊梦、皇嗣不安、东窗事发，都只在一线之间。':S.karma>=40?'业障已显。宫里的风开始往你这边吹了。':'香火尚清。只是这宫里，干净的人往往活不长。'}</div>
+    </div>
+    <div class="card info-card">
+      <div class="info-top"><h3>身孕与子嗣</h3><span>子嗣 ${S.children}</span></div>
+      <div class="info-body">${S.pregnant?`有孕 ${S.pregnant.m} 月，预计 ${S.pregnant.m>=3?'即将临盆':'还需 '+(3-S.pregnant.m)+' 月'}。`:S.children?'子嗣绕膝，是你在这宫里最实在的底气。':'尚无身孕。侍寝后有一定概率怀上皇嗣。'}${hasRetainer('gu')?' 顾清和在侧，可保安胎。':''}</div>
+    </div>
+    <div class="card info-card">
+      <div class="info-top"><h3>私房与门第</h3><span>${FAMILIES.find(f=>f.id===S.fam).name}出身</span></div>
+      <div class="kv">
+        <div><span>银两</span><b>${fmt(S.money)}</b></div>
+        <div><span>心机</span><b>${S.scheme}</b></div>
+        <div><span>家族影响</span><b>${familyPower()}</b></div>
+        <div><span>盟友</span><b>${Object.keys(S.bonds).filter(id=>S.bonds[id]>=60).length}</b></div>
+      </div>
+    </div>
+    <div class="card info-card">
+      <div class="info-top"><h3>隐秘之物</h3><span>${S.items.length} 件</span></div>
+      ${S.items.length?S.items.map(id=>{
+        const it=ITEMS[id];
+        return `<div class="item-row"><span class="item-ico">${it.glyph}</span>
+          <span class="item-main"><span class="item-name">${it.name}</span><span class="item-desc">${it.desc}</span></span>
+          <button class="item-use" data-use-item="${id}">使用</button></div>`;
+      }).join(''):'<div class="empty">还没有得到任何隐秘之物</div>'}
+    </div>
+    <div class="card info-card">
+      <div class="info-top"><h3>宫中记事</h3><span>近 8 条</span></div>
+      ${S.log.length?S.log.slice(0,8).map((t,i)=>`<div class="log-item"><span>${String(S.log.length-i).padStart(2,'0')}</span><div>${esc(t)}</div></div>`).join(''):'<div class="empty">尚无记事</div>'}
+    </div>
+    ${S.flags.escapeDeal?`<div class="card info-card" style="border-color:rgba(196,84,74,.36)">
+      <div class="info-top"><h3>出宫之约</h3><span>半面郎君</span></div>
+      <div class="info-body">井台边的那半枚钥匙还在你妆匣最底层。他说，想走的时候，它会派上用场。</div>
+      <button class="mini-act" style="margin-top:8px;width:100%;border-color:rgba(196,84,74,.5);color:#d08a7c" data-escape="1">今 夜 就 走</button>
+    </div>`:''}
+    <div class="card info-card">
+      <div class="info-top"><h3>结局图鉴</h3><span>${loadGal().endings.length}/${ENDINGS.length}</span></div>
+      <div class="info-body">已见过的结局会收进图鉴。不同的位分、银两、子嗣与家族，会走向不同的终局。</div>
+      <button class="mini-act gold" style="margin-top:8px;width:100%" data-gallery="1">翻开图鉴</button>
+    </div>`;
+}
+
+function familyPower(){
+  const fam=FAMILIES.find(f=>f.id===S.fam);
+  const base=fam.id==='shi'?70:fam.id==='wu'?58:fam.id==='shang'?52:fam.id==='shu'?42:24;
+  return clamp(base+S.rank*6+S.children*8+(S.flags.familyBoost||0),0,120);
+}
+const TABS={palace:renderPalace,estate:renderEstate,scheme:renderScheme,people:renderPeople,archive:renderArchive};
+let tabSeq=0;
+function renderTab(resetScroll){
+  const fn=TABS[currentTab]||renderPalace;
+  const main=$('main');
+  const top=main.scrollTop;
+  const seq=++tabSeq;
+  /* 先在离屏节点里搭好新页，等图片解码完再整体换入，
+     避免出现一帧线稿/空窗占位 */
+  const box=document.createElement('div');
+  box.innerHTML=fn();
+  const imgs=[].slice.call(box.querySelectorAll('img'));
+  const waits=imgs.map(im=>{
+    if(im.complete&&im.naturalWidth)return Promise.resolve();
+    return (im.decode?im.decode():Promise.resolve()).catch(()=>{});
+  });
+  const commit=()=>{
+    if(seq!==tabSeq)return;
+    while(main.firstChild)main.removeChild(main.firstChild);
+    while(box.firstChild)main.appendChild(box.firstChild);
+    main.scrollTop=resetScroll===false?top:0;
+    document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===currentTab));
+  };
+  Promise.race([Promise.all(waits),new Promise(r=>setTimeout(r,160))])
+    .then(()=>requestAnimationFrame(commit));
+}
+function setTab(t){
+  if(!TABS[t])return;
+  currentTab=t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===currentTab));
+  renderTab(true);
+}
+
+/* ---------- 弹层 ---------- */
+function openSheet(html,cls){
+  const w=$('sheet');
+  w.className='sheet-wrap '+(cls||'dlg');
+  $('sheetBody').innerHTML=html;
+  w.hidden=false;
+  $('sheetBody').scrollTop=0;
+}
+function closeSheet(){$('sheet').hidden=true}
+$('sheetMask').onclick=closeSheet;
+
+/* 立绘大图 */
+function openLB(src){if(!src)return;$('lbImg').src=src;$('lb').hidden=false}
+$('lb').onclick=()=>{$('lb').hidden=true};
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-big]');
+  if(t){const src=ART[t.dataset.big];if(src){e.preventDefault();e.stopPropagation();openLB(src)}}
+},true);
+
+/* 同一地点的事件轮换：优先取没见过的，全部见过后再从头轮 */
+function vNext(key,n){
+  const k='seen_'+key;
+  let seen=Array.isArray(S.flags[k])?S.flags[k].slice():[];
+  seen=seen.filter(i=>i>=0&&i<n);
+  if(seen.length>=n)seen=[];
+  const left=[];
+  for(let i=0;i<n;i++)if(seen.indexOf(i)<0)left.push(i);
+  const i=left.length?pick(left):rnd(0,n-1);
+  seen.push(i);
+  S.flags[k]=seen;
+  return i;
+}
+
+/* ---------- 六宫行动 ---------- */
+async function actKunning(){
+  const v=vNext('kunning',3);
+  const gain=8+Math.floor(S.attrs.wit*.08+S.attrs.social*.06)+rnd(-2,4);
+  const eff={fame:gain,favor:rnd(0,2)};
+  let title='坤宁宫的茶',loc='坤宁宫 · 正殿',body;
+  if(v===0){
+    let extra='';
+    if(S.karma>=50&&rnd(1,100)<=30){
+      eff.fame-=6;eff.favor-=3;
+      extra='皇后端着茶盏，忽然问起你宫里上个月的用度。你答得滴水不漏，她却只笑了笑——那一笑，比斥责更冷。';
+    }
+    if(rnd(1,100)<=18){
+      eff.scheme=(eff.scheme||0)+2;
+      extra+=' 出殿时，你听见廊下两个宫女压低了声音，提起了“冷宫”两个字。';
+    }
+    body=[
+      '天还没亮透，你已经在坤宁宫外等了半个时辰。石阶上的露水浸湿了裙角。',
+      '皇后萧婉端坐在上首，笑意温婉，问的却都是最要紧的事：你宫里用了多少炭、见了什么人、昨夜为何没去御花园。',
+      extra||'你一一答了。她点点头，赏了你一盏温茶。茶是上好的雨前龙井，你却喝出了满口涩味。'
+    ];
+  }else if(v===1){
+    title='抄不完的女诫';loc='坤宁宫 · 东暖阁';
+    eff.wit=(eff.wit||0)+2;
+    body=[
+      '皇后留你在东暖阁抄《女诫》。她坐在窗下理佛珠，一句话也不说，殿里只剩笔尖划过纸面的声音。',
+      '你抄到第三页，她忽然开口：“字要慢，心也要慢。”你应了声是，笔锋却顿了顿。',
+      '临走前她看了看你的字，说还过得去，赏了一匣新墨。你捧着墨出门，才发觉手腕是酸的。'
+    ];
+  }else{
+    title='廊下的炭例';loc='坤宁宫 · 廊下';
+    eff.social=(eff.social||0)+2;
+    body=[
+      '天冷了，各宫的炭例发下来，你那份被削了三成。你去坤宁宫回话，正撞见两个嫔妃在廊下为几筐银霜炭争得面红耳赤。',
+      '皇后没有抬头，只问你：“你说，这炭该怎么分？”廊下一下子静了，所有人的目光都落在你身上。',
+      '你答得四平八稳，谁的错处都没点破。她点点头，把你的那份补了回来——从别人的份例里扣的。'
+    ];
+  }
+  const chips=applyEff(eff);
+  S.log.unshift('坤宁宫晨省，威望 +'+gain);
+  await scene({
+    locked:true,kind:'hall',who:'xiao',
+    kicker:'晨昏定省',title,loc,body,chips,
+    choices:[{label:'退 下'}]
+  });
+}
+async function actGarden(){
+  const v=vNext('garden',3);
+  if(v===0){
+    const bonus=Math.floor(S.attrs.charm*.04);
+    await scene({
+      locked:true,kind:'garden',who:'emperor',kicker:'御苑偶遇',title:'花影里的明黄',loc:'御花园 · 万春亭',
+      body:[
+        '你沿着太液池慢慢走，忽然看见亭子里立着一抹明黄。帝王负手看水，身边只跟了一个小太监。',
+        '他似乎听见了脚步声，转过头来。'
+      ],
+      choices:[
+        {label:'上前福身行礼',hint:'帝宠 +'+(7+bonus)+'~'+(12+bonus)+' · 威望 +3 · 赏银 +15~30',run:()=>{
+          const f=rnd(7,12)+bonus;
+          const known=S.served>0||S.favor>=25;
+          return {text: known
+            ? '你稳稳福下身去，声音不高不低。帝王看了你片刻，忽然笑了：“又是你。”他抬手让你近前，临走时，身边的小太监照例把一个荷包塞进你手里。'
+            : '你稳稳福下身去，声音不高不低。帝王看了你片刻，忽然问：“你叫什么名字？”临走时，他身边的小太监追上来，把一个荷包塞进你手里。',
+            eff:{favor:f,fame:3,money:rnd(15,30)}};
+        }},
+        {label:'退到花树后，不惊动圣驾',hint:'心机 +2 · 帝宠 -1',run:()=>({
+          text:'你悄悄退进花影里。帝王在亭中站了一会儿，终究没有回头。你记住了他今日穿的那件常服颜色。',
+          eff:{scheme:2,favor:-1}
+        })}
+      ]
+    });
+  }else if(v===1){
+    const rv=pick(RIVALS.filter(x=>x.id!=='xiao'));
+    const good=S.attrs.social+rnd(0,30)>=62;
+    await scene({
+      locked:true,kind:'garden',who:rv.id,kicker:'狭路相逢',title:'御花园里的相逢',loc:'御花园 · 曲廊',
+      body:[
+        `转过曲廊，你迎面撞上了${rv.name}。她身后跟着四个宫女，衣香鬓影，把半条路都占满了。`,
+        rv.desc
+      ],
+      choices:[
+        {label:'笑着福身问安',hint:good?'好感 +8 · 交际 +2':'好感 -3 · 威望 +2 · 交际 +1',run:()=>{
+          if(good)return {text:`${rv.name}打量你两眼，竟也还了半礼。宫里的人最会看风向，她看得出你不好惹。`,eff:{bond:{[rv.id]:8},fame:2,social:2}};
+          return {text:`你话说得急了些，${rv.name}唇角一挑，身边的宫女便笑出了声。你记住了这一笑。`,eff:{bond:{[rv.id]:-3},fame:2,social:1}};
+        }},
+        {label:'侧身让路，不与她争',hint:'心机 +2',run:()=>({
+          text:'你让到路边。她走过去时，裙角扫过你的鞋面。你低头看着那道痕，忽然觉得这宫里连路都是分等级的。',
+          eff:{scheme:2}
+        })}
+      ]
+    });
+  }else{
+    await scene({
+      locked:true,kind:'garden',kicker:'御苑拾遗',title:'石缝里的残笺',loc:'御花园 · 堆秀山',
+      body:[
+        '你在假山石缝里摸到一角纸。展开一看，是半页被雨水泡皱的信，上面只剩几个字：“……药性烈，慎用。”',
+        '落款被撕掉了，只剩一枚小小的朱印。'
+      ],
+      choices:[
+        {label:'收进袖中，回去细查',hint:'心机 +4 · 威望 +4',run:()=>({
+          text:'你把残笺收好。这宫里没有无缘无故的字纸，就像没有无缘无故的恩宠。',
+          eff:{scheme:4,fame:4,flag:{intel:true}}
+        })},
+        {label:'放回原处，只当没看见',hint:'业障 -2',run:()=>({
+          text:'你把纸塞回石缝。有些东西，看见了反而是祸。',
+          eff:{karma:-2}
+        })}
+      ]
+    });
+  }
+}
+async function actChangxin(){
+  const v=vNext('changxin',3);
+  const intros=[
+    ['偏殿里摆着几架旧琴，梁上悬着一条洗得发白的水袖。',
+     '掌事女官说，宫里的娘娘想练舞，都在这里。殿上献艺，也全凭这一条水袖。'],
+    ['今日偏殿里有乐师在调弦，宫商角徵羽，一根一根试过去。几个小宫女贴着墙站，跟着拍子轻轻点脚。',
+     '掌事女官见你来了，把谱子递过来：“娘娘来得巧，今日有人配乐。”'],
+    ['偏殿空着，案上摊着一册翻旧的舞谱，边角被人手摸得起了毛。',
+     '女官说这是从前一位娘娘留下的，那位娘娘舞跳得极好，后来却再没来过偏殿。',
+     '你把舞谱翻过一页，纸上有淡淡的旧香。']
+  ][v];
+  await scene({
+    locked:true,kind:'hall',kicker:'长信殿 · 偏殿',title:'丝竹与旧水袖',loc:'长信殿 · 偏殿',
+    body:intros,
+    choices:[
+      {label:'练舞',hint:'才华 +2~4 · 不惊动圣驾',run:()=>{
+        const d=rnd(2,4);
+        S.log.unshift('长信殿练舞，才华 +'+d);
+        return {
+          text:'你把那条旧水袖反反复复练了一下午。掌事女官起初还站着看，后来索性搬了张凳子坐下，替你数拍子。',
+          eff:{talent:d}
+        };
+      }},
+      {label:'献艺邀宠',cost:20,hint:'才华判定 · 银两 -20 · 成功得赏银 50~90',run:()=>{
+        const score=S.attrs.talent*.6+S.attrs.charm*.25+rnd(0,28)+(hasRetainer('an')?6:0);
+        const ok=score>=62;
+        S.log.unshift(ok?'长信殿献艺，圣心大悦':'长信殿献艺，未能出彩');
+        /* 帝王反应随机，不重复同一套评语 */
+        const okTexts=[
+          '你抱琴上殿时，帝王正有些倦。可第一个音落下，他抬起了眼。一曲终了，殿里静了片刻，他忽然问：“这曲子，谁教你的？”你答得从容，他便笑了，随手赏下一封银子。',
+          '一曲终了，帝王没有立刻说话，只抬手让人把案上的折子撤了。“再来一段。”他说。你重新起势时，能感觉到他的目光一直落在你手上。',
+          '殿上烛影摇了摇。帝王放下茶盏，等你一曲唱罢，才慢慢道：“赏。”那一个字拖得很长，殿里的人都听懂了。',
+          '帝王听至一半便合了眼，你以为他不耐，指尖却不敢停。曲终时他睁开眼，只说了一句：“这曲子，往后只许弹给朕听。”',
+          '你收声时，帝王正看着窗外。片刻后他回过头，像是才想起殿里还有人：“过来，让朕看看你的手。”'
+        ];
+        const badTexts=[
+          '你练了半月的水袖，在殿上只换得帝王一句“赏”。他连头都没抬，正在看边关送来的折子。退回偏殿时，掌事女官塞给你几两碎银，说是例赏。',
+          '你起势时踩错了半拍。帝王抬眼看了一下，又低下头去，像什么都没听见。殿角的更漏滴得很慢。',
+          '一曲未终，帝王便起身走了。殿门合上时，你才听清自己的琴声有多空，贵妃的笑声从帘后传出来。',
+          '你唱到高处失了声。殿里静得可怕，帝王摆摆手：“下去吧，换个人来。”你退到殿外，才发现手心全是汗。',
+          '帝王从头到尾没有抬头。你奏完最后一个音，等了很久，才听见他漫不经心的一句：“赏。”赏的是别人挑剩的料子。'
+        ];
+        if(ok){
+          const silver=rnd(50,90);
+          let i=rnd(0,okTexts.length-1);
+          if(i===S.flags.lastOk)i=(i+1)%okTexts.length;
+          S.flags.lastOk=i;
+          return {
+            text:okTexts[i],
+            eff:{money:silver-20,favor:rnd(10,16)+(hasRetainer('an')?2:0),fame:rnd(3,6)}
+          };
+        }
+        const silver=rnd(8,15);
+        let j=rnd(0,badTexts.length-1);
+        if(j===S.flags.lastBad)j=(j+1)%badTexts.length;
+        S.flags.lastBad=j;
+        return {
+          text:badTexts[j],
+          eff:{money:silver-20,favor:2,fame:-2}
+        };
+      }}
+    ]
+  });
+}
+async function actShanggong(){
+  const v=vNext('shanggong',3);
+  const gain=12+Math.floor(S.attrs.social*.06)+(hasRetainer('cui')?5:0)+rnd(0,5);
+  const eff={fame:gain,social:rnd(1,2)};
+  let title='银子铺的路',loc='尚宫局 · 偏厅',body;
+  if(v===0){
+    body=[
+      '尚宫局的廊下永远有人在等。你递了牌子，又塞了银子，掌事女官才肯让你进偏厅说话。',
+      '宫里的事，一半写在册子上，一半藏在这些人嘴里。'
+    ];
+    if(rnd(1,100)<=25){
+      eff.scheme=3;
+      body.push('临走时，一个相熟的女官压低声音提点你一句：最近有人在查你宫里的采买账目。你记下了。');
+    }
+  }else if(v===1){
+    title='账册上的墨迹';loc='尚宫局 · 账房';
+    eff.scheme=(eff.scheme||0)+2;
+    body=[
+      '尚宫局的账房里堆着半人高的册子。管账的女官一边拨算盘，一边同你说话，眼睛始终没离开账本。',
+      '“娘娘宫里上月的炭、绸、药材，都记在这几页。”她把册子往你这边推了推，“只是有几笔，不是娘娘的手笔。”',
+      '你一行行看下去，心里渐渐有了数——有人在借你的名目走账。'
+    ];
+  }else{
+    title='漏出来的银子';loc='尚宫局 · 后廊';
+    const extra=rnd(30,60);eff.money=extra;
+    body=[
+      '你从后廊过，撞见两个女官正往袖里塞银锭。见了你，两人脸都白了，为首的那个扑通跪下。',
+      '你没有声张，只让她们把来龙去脉说清楚。原来是一笔早该销掉的旧账，压了三年，谁都不敢动。',
+      `临走时，那女官追上来，把一包银子塞进你手里：“娘娘今日没看见什么吧？”你掂了掂，约莫 ${extra} 两。`
+    ];
+  }
+  if(hasRetainer('cui'))body.push('崔姑姑替你周旋了几句，事情办得格外顺当。');
+  const chips=applyEff(eff);
+  S.log.unshift('尚宫局打点，威望 +'+gain);
+  await scene({
+    locked:true,kind:'shanggong',who:hasRetainer('cui')?'cui':null,kicker:'尚宫局',title,loc,
+    body,chips,choices:[{label:'回 宫'}]
+  });
+}
+async function actTaiyi(){
+  const v=vNext('taiyi',3);
+  let title='脉案与养颜方',loc='太医院 · 药房',body;
+  if(v===0){
+    body=[
+      '老太医隔着帕子替你诊脉，眉头松开又皱起。',
+      S.pregnant
+        ?'“娘娘这一胎，脉象尚稳。只是近日忧思过重，若再劳神，怕是要动胎气。”'
+        :S.attrs.health<35
+          ?'“娘娘体寒，需好生调养。若想承孕，恐怕要多费些时日。”'
+          :'“娘娘身子无碍，只是心火旺。宫里的事，能放一放就放一放。”',
+      '案头还摆着几只白瓷小罐，是太医院配的养颜膏，盖子一开，满是珍珠粉的气味。'
+    ];
+  }else if(v===1){
+    title='药炉边的旧案';loc='太医院 · 煎药房';
+    body=[
+      '你在煎药房外等了片刻，一个小药童捧着药碗跑过，被门槛绊了一下，药汁泼了半地。',
+      '老太医骂了他两句，转头替你诊脉：“娘娘莫怪，这孩子笨手笨脚，心倒是细。”',
+      '药炉上咕嘟咕嘟地响。他忽然提起一桩旧事：先头那位仁贵妃，也是在这里求的养颜方，后来……话说一半，他便住了口。',
+      '案头几只白瓷小罐里，是太医院新配的养颜膏。'
+    ];
+  }else{
+    title='等了一炷香';loc='太医院 · 廊下';
+    body=[
+      '太医院廊下坐着两位先到的嫔妃，你等了一炷香才被叫进去。屋里点着艾草，烟熏得人眼睛发涩。',
+      '老太医一边净手一边说：“天冷，各宫都来请脉。娘娘身子不算差，只是气血有些虚。”',
+      '他顿了顿，又添一句：“宫里熬人的，从来不只是病。”',
+      '案头的养颜膏只剩小半罐，他还是匀了一份给你。'
+    ];
+  }
+  if(hasRetainer('gu'))body.push('顾清和在一旁替你换了张方子，又低声嘱咐了几句。');
+  await scene({
+    locked:true,kind:'taiyi',who:hasRetainer('gu')?'gu':null,kicker:'太医院',title,loc,
+    body:body.filter(Boolean),
+    choices:[
+      {label:'问诊调养',hint:'体质 +3~5',run:()=>{
+        const d=(S.attrs.health>=92?1:rnd(3,5))+(hasRetainer('gu')?2:0);
+        S.log.unshift('太医院问诊');
+        return {
+          text:'老太医重新写了方子，又嘱咐你少思少虑。药煎好时，苦味顺着廊下一直飘到花圃里。',
+          eff:{health:d}
+        };
+      }},
+      {label:'求养颜方',hint:'容貌 +2~3 · 内调外养',run:()=>{
+        const d=rnd(2,3)+(hasRetainer('gu')?1:0);
+        S.log.unshift('太医院求养颜方，容貌 +'+d);
+        return {
+          text:'老太医拗不过你，从小罐里挑了三样，配成一盒细腻的膏子：“每日薄薄一层，别贪多。容貌是养出来的，不是急出来的。”',
+          eff:{charm:d}
+        };
+      }}
+    ]
+  });
+}
+async function actFotang(){
+  const v=vNext('fotang',3);
+  const eff={karma:S.karma>0?-Math.min(10,S.karma):0,fame:2};
+  const chips=applyEff(eff);
+  S.log.unshift('佛堂焚香祈福');
+  let title='香灰与旧愿',loc='佛堂 · 西配殿',body;
+  if(v===0){
+    body=[
+      '佛堂里很静。你跪在蒲团上，看着香灰一寸寸落下。',
+      S.karma>0?'你想起那些被你算计过的人，想起她们最后看你的眼神。香火明明是暖的，你却觉得后背发凉。':'你没什么可求的。求多了，佛也嫌烦。',
+      '起身时，袖子沾了点香灰。你拍了拍，拍不干净。'
+    ];
+  }else if(v===1){
+    title='添一盏长明灯';loc='佛堂 · 灯龛';
+    body=[
+      '灯龛里几十盏长明灯，火苗一动不动。管香火的姑子递来一盏新的灯油，说这盏的位置还空着。',
+      '你亲手添了油，火苗“噗”地亮起来。她在一旁念了句佛号，又说：“灯亮多久，看的是添油的人。”',
+      '你在灯前站了一会儿。那些说不出口的话，到底没有说。'
+    ];
+  }else{
+    title='扫地的老尼';loc='佛堂 · 前院';
+    body=[
+      '前院有个老尼在扫落叶，扫帚一下一下，慢得让人心静。你从她身边过，她忽然停手。',
+      '“娘娘眉间有煞。”她也不看你，“煞不在外头，在心里。”',
+      '你问她可有解法。她重新低下头扫地：“多来几趟，少做几件亏心事，煞就淡了。”'
+    ];
+  }
+  await scene({
+    locked:true,kind:'temple',kicker:'佛堂',title,loc,body,chips,
+    choices:[{label:'出 殿'}]
+  });
+}
+async function actLenggong(){
+  S.flags.metHidden=true;
+  const v=vNext('lenggong',3);
+  if(v===0){
+    const who=['guanyue','banmian','gunv'][vNext('lenggong_npc',3)];
+    if(who==='guanyue'){
+      await scene({
+        locked:true,kind:'cold',who:'guanyue',kicker:'冷宫 · 秘辛',title:'观月娘子的药',loc:'冷宫 · 废殿',
+        body:[
+          '冷宫的墙比别处高，草比别处深。你推开一扇半朽的门，看见一个穿素衣的女人坐在窗下，正拿小秤称药。',
+          '“娘娘不该来。”她头也不抬，“不过既然来了，便是有缘。”',
+          '她推过来一枚蜡丸：“安胎的。不要钱——只要娘娘记得，这宫里每多一个孩子，便要多一个死人。”'
+        ],
+        choices:[
+          {label:'收下秘药',hint:'获得秘药·安胎 · 业障 +5',run:()=>({
+            text:'你收下蜡丸。她的手很凉，像在冰水里泡过。',eff:{item:'pill',karma:5}
+          })},
+          {label:'婉拒，只与她说了会儿话',hint:'心机 +3',run:()=>({
+            text:'你把蜡丸推回去。她也不恼，只说了句：“娘娘心善，但愿这心善能护得住你。”',
+            eff:{scheme:3}
+          })}
+        ]
+      });
+    }else if(who==='banmian'){
+      await scene({
+        locked:true,kind:'cold',who:'banmian',kicker:'冷宫 · 交易',title:'半面郎君',loc:'冷宫 · 井台',
+        body:[
+          '井台边站着一个人，半张脸藏在铁面具下。他手里转着一枚宫门钥匙。',
+          '“二百两。”他说，“我送你出宫。只是出宫之前，你得替我杀一个人。”',
+          '“谁？”',
+          '“到时候你就知道了。”'
+        ],
+        choices:[
+          {label:'应下交易',hint:'银两 -200 · 业障 +20 · 记下“出宫之约”',run:()=>{
+            if(S.money<200)return {text:'你摸了摸荷包，终究拿不出二百两。他笑了笑，把钥匙收回去：“等娘娘攒够了再来。”',eff:{scheme:2}};
+            return {text:'你把二百两放在井台上。他收了银子，把钥匙的一半掰下来给你：“拿着。想走的时候，它会派上用场。”',eff:{money:-200,karma:20,flag:{escapeDeal:true}}};
+          }},
+          {label:'拒绝，转身离开',hint:'心机 +4',run:()=>({
+            text:'你退回黑暗里。他在身后笑了一声：“娘娘会回来的。”',eff:{scheme:4}
+          })}
+        ]
+      });
+    }else{
+      await scene({
+        locked:true,kind:'cold',who:'gunv',kicker:'冷宫 · 蛊',title:'蛊女的情蛊',loc:'冷宫 · 枯井旁',
+        body:[
+          '枯井旁坐着一个头发花白的女人，膝上盘着一条通体漆黑的小蛇。她抬头看你，眼睛亮得不像老人。',
+          '“情蛊。”她伸出枯瘦的手，掌心卧着一粒朱红的丸药，“吃了它，帝王三个月内眼里只有你。代价么……你以后就知道了。”'
+        ],
+        choices:[
+          {label:'服下情蛊',hint:'帝宠 +20 · 业障 +15',run:()=>({
+            text:'你吞下那粒药。喉咙里像有一条细小的蛇游过去，很快就没了声息。',eff:{favor:20,karma:15,flag:{loveGu:true}}
+          })},
+          {label:'摇头后退',hint:'体质 +2',run:()=>({
+            text:'你退出废殿。身后传来蛊女的笑声，像蛇在草丛里游。',eff:{health:2}
+          })}
+        ]
+      });
+    }
+  }else if(v===1){
+    const id=pick(['bloodpin','bonecomb','edict','dress','pill']);
+    const silver=rnd(30,60);
+    const chips=applyEff({item:id,money:silver,karma:id==='edict'||id==='bonecomb'?4:1});
+    S.log.unshift('冷宫拾得 '+ITEMS[id].name);
+    await scene({
+      locked:true,kind:'cold',kicker:'冷宫 · 遗物',title:'废殿里的东西',loc:'冷宫 · 无名殿',
+      body:[
+        '你在一间空殿里翻找。妆台上落满灰，铜镜里映出你的脸，比平时白。',
+        `妆奁底层压着一件东西：<span class="em">${ITEMS[id].name}</span>。${ITEMS[id].desc}`,
+        `妆奁夹层里还塞着些碎银，你一并收进袖中。走出殿门时，总觉得身后有人轻轻叹了一口气。`
+      ],
+      chips,
+      choices:[{label:'离 开 冷 宫'}]
+    });
+  }else{
+    const chips=applyEff({health:-6,karma:5,favor:-3});
+    S.log.unshift('冷宫夜探，受了些惊');
+    await scene({
+      locked:true,kind:'cold',kicker:'冷宫 · 惊变',title:'墙里的哭声',loc:'冷宫 · 断墙',
+      body:[
+        '你走到断墙下，忽然听见墙里传出哭声。那声音很近，像是贴着你的耳朵。',
+        '你猛地回头，什么也没有。再回头时，墙根下多了一双小小的绣鞋，鞋尖朝着你。',
+        '你几乎是跑着离开的。回到宫里，才发现手心全是冷汗。'
+      ],
+      chips,
+      choices:[{label:'惊 魂 未 定'}]
+    });
+  }
+}
+
+/* ---------- 产业 / 门客 / 道具 ---------- */
+function upgradeBuilding(id){
+  if(busy)return;
+  const b=BUILDINGS.find(x=>x.id===id);if(!b)return;
+  const lv=S.buildings[id]||0;
+  if(S.rank<b.rank){showToast('位分不足，尚未解锁');return}
+  if(lv>=6){showToast('已至满级');return}
+  const cost=upCost(b);
+  if(S.money<cost){showToast('银两不足，需 '+fmt(cost)+' 两');return}
+  S.money-=cost;S.buildings[id]=lv+1;
+  S.log.unshift(`${b.name}${lv?'升至 '+S.buildings[id]+' 级':'修建完成'}`);
+  save();renderGame();
+  showToast(`${b.name} ${lv?'升至 '+S.buildings[id]+' 级':'修建完成'} · 月产 ${fmt(buildingIncome(b))} 两`);
+}
+function openAssign(bid){
+  const b=BUILDINGS.find(x=>x.id===bid);if(!b)return;
+  if(S.rank<b.rank){showToast('尚未解锁');return}
+  const rows=RETAINERS.map(r=>{
+    if(!hasRetainer(r.id)){
+      return `<div class="item-row" style="opacity:.45"><span class="item-ico">${r.glyph}</span>
+        <span class="item-main"><span class="item-name">${r.name}</span><span class="item-desc">尚未招募</span></span>
+        <span class="item-use" style="border-color:transparent;color:#5f554b">未招募</span></div>`;
+    }
+    const here=assignedTo(bid).indexOf(r.id)>=0;
+    const other=Object.keys(S.assign).find(k=>k!==bid&&(S.assign[k]||[]).indexOf(r.id)>=0);
+    const where=other?BUILDINGS.find(x=>x.id===other).name:'闲置';
+    return `<div class="item-row"><span class="item-ico">${r.glyph}</span>
+      <span class="item-main"><span class="item-name">${r.name} <em style="font-style:normal;font-size:8px;color:#7f8f85">战力${r.power}</em></span>
+      <span class="item-desc">${r.effect} · ${here?'已驻此阁':where}</span></span>
+      <button class="item-use" data-assign-ret="${r.id}" data-bid="${bid}">${here?'撤下':'派驻'}</button></div>`;
+  }).join('');
+  openSheet(`<div class="sh-title">派驻 · ${b.name}</div>
+    <div class="sh-sub">每驻一名门客，此阁产出 +20%；一栋最多四人，同一人只能驻一处。</div>
+    <div class="sh-hair"></div>${rows}`);
+}
+function assignRetainer(rid,bid){
+  if(!hasRetainer(rid)){showToast('尚未招募');return}
+  const arr=S.assign[bid]||[];
+  if(arr.indexOf(rid)<0&&arr.length>=4){showToast('一栋建筑最多派驻四人');return}
+  Object.keys(S.assign).forEach(k=>{S.assign[k]=(S.assign[k]||[]).filter(x=>x!==rid)});
+  arr.push(rid);S.assign[bid]=arr;
+  const b=BUILDINGS.find(x=>x.id===bid),r=RETAINERS.find(x=>x.id===rid);
+  S.log.unshift(`派驻 ${r.name} 于 ${b.name}`);
+  save();closeSheet();renderGame();showToast(`${r.name} 已驻 ${b.name}`);
+}
+function recruit(id){
+  if(busy)return;
+  const r=RETAINERS.find(x=>x.id===id);if(!r||hasRetainer(id))return;
+  if(S.money<r.cost){showToast('银两不足，需 '+r.cost+' 两');return}
+  S.money-=r.cost;S.retainers.push(id);
+  S.log.unshift('招揽门客 '+r.name);
+  save();renderGame();showToast(`${r.name} 入幕 · 门客战力 +${r.power}`);
+}
+async function giftRival(id){
+  if(busy)return;
+  const r=rivalOf(id);
+  if(S.ap<1){showToast('行动力不足');return}
+  if(S.money<50){showToast('银两不足');return}
+  S.ap--;S.money-=50;
+  const gain=rnd(8,14)+(S.attrs.social>=70?2:0);
+  const chips=applyEff({bond:{[id]:gain}});
+  S.log.unshift(`向 ${r.name} 送礼`);
+  save();renderGame();
+  await scene({
+    locked:true,kind:'hall',who:id,kicker:'人情往来',title:'一份薄礼',loc:r.title||'宫中',
+    body:[
+      '你挑了一对成色极好的玉镯，用锦盒装了，命人送到她宫里。',
+      `送礼的人回来禀报：${r.name}收了，没说什么，只让赏了你一碟新做的点心。`,
+      '这宫里，肯收礼就是肯给面子。至于这面子值多少，要看你以后拿什么还。'
+    ],
+    chips,
+    choices:[{label:'收 下 点 心'}]
+  });
+}
+async function useItem(id){
+  if(busy)return;
+  if(S.items.indexOf(id)<0)return;
+  const it=ITEMS[id];
+  let chips=[],text='',title=it.name;
+  if(id==='bloodpin'){
+    S.flags.bloodpin=true;
+    chips=[{t:'下一次宫斗成功率 +20%',cls:'gold'}];
+    text='你拆开簪子上的红绳，把它藏进袖口。冰凉的一点贴着皮肤，像一枚小小的牙。';
+  }else if(id==='bonecomb'){
+    const t=RIVALS.map(r=>({r,f:S.rivals[r.id].favor})).sort((a,b)=>b.f-a.f)[0].r;
+    chips=applyEff({rfavor:{[t.id]:-20},rpower:{[t.id]:-10},karma:12});
+    S.flags.curse=true;
+    text=`你对着铜镜梳头，梳齿间缠着一缕不属于你的长发。镜子里，${t.name}的影子似乎淡了一层。`;
+  }else if(id==='edict'){
+    chips=applyEff({fame:150,karma:25});
+    text='你展开那卷无字诏书。墨迹在灯下慢慢浮出来，像有人隔着很多年，替你写好了这一笔。';
+  }else if(id==='dress'){
+    chips=applyEff({fame:80,health:-10});
+    text='你换上那件旧嫁衣。尺寸竟分毫不差。镜中的人眉眼艳丽，却不像你自己。';
+  }else if(id==='pill'){
+    if(S.pregnant){
+      S.flags.safeBirth=true;
+      chips=[{t:'生产时难产风险 -15%',cls:'gold'}];
+      text='你就着温水服下药丸。腹中的孩子轻轻动了一下，像是知道了什么。';
+    }else{
+      chips=applyEff({health:5});
+      text='药性温和，你喝下后出了一层薄汗，连日来的疲惫散了不少。';
+    }
+  }
+  S.items=S.items.filter(x=>x!==id);
+  S.log.unshift('使用 '+it.name);
+  save();renderGame();
+  await scene({
+    locked:true,kind:'hall',kicker:'隐秘之物',title,loc:'储秀宫 · 内室',
+    body:[text],chips,choices:[{label:'收 好'}]
+  });
+  save();renderGame();
+}
+
+/* ---------- 宫斗 ---------- */
+const SCHEMES=[
+  {id:'poison',name:'下毒',glyph:'毒',cost:30,minScheme:0,desc:'在饮食中做手脚。以智慧、交际与心机对抗对方智慧。'},
+  {id:'rumor',name:'造谣',glyph:'谣',cost:40,minScheme:0,desc:'买通宫人散布流言。以智慧对抗对方交际。'},
+  {id:'frame',name:'栽赃',glyph:'赃',cost:60,minScheme:30,desc:'伪造证据，重创其势力。风险最高，容易留下物证。'},
+  {id:'charm',name:'争宠',glyph:'争',cost:0,minScheme:0,desc:'以容貌与才情，在御前争一分颜色。'},
+  {id:'ally',name:'拉拢',glyph:'盟',cost:60,minScheme:0,desc:'送礼示好，抬升关系。好感≥60可结为盟友。'}
+];
+function schemeRate(type,r){
+  const a=S.attrs;
+  let base=0;
+  if(type==='poison')base=(a.wit+a.social)/2-r.wit+18+S.scheme*.35;
+  else if(type==='rumor')base=a.wit-r.social+40+S.scheme*.2;
+  else if(type==='frame')base=(a.wit+S.scheme)/2-r.wit+42;
+  else if(type==='charm')base=(a.charm+a.talent)/2-r.charm+45;
+  base+=schemeBonus();
+  return clamp(Math.round(base),8,92);
+}
+function openSchemeSheet(id){
+  const r=rivalOf(id);
+  const rows=SCHEMES.map(sc=>{
+    const rate=sc.id==='ally'?null:schemeRate(sc.id,r);
+    const dis=S.ap<1||S.money<sc.cost||(sc.minScheme&&S.scheme<sc.minScheme);
+    return `<button class="scheme" data-scheme="${sc.id}" data-target="${id}" ${dis?'disabled':''}>
+      <span class="scheme-ico">${sc.glyph}</span>
+      <span class="scheme-main">
+        <span class="scheme-top"><span class="scheme-name">${sc.name}</span>
+          <span class="scheme-rate">${rate===null?'好感 +'+(15+Math.floor(S.attrs.social*.08))+' · 交际 +1':'成算 '+rate+'%'}</span></span>
+        <span class="scheme-desc">${sc.desc}</span>
+        <span class="scheme-cost">消耗 1 行动力${sc.cost?' · '+sc.cost+' 两':''}${sc.minScheme?' · 需心机≥'+sc.minScheme:''}${rate===null?'':(S.flags.bloodpin?' · 血玉簪 +20%':'')}</span>
+      </span>
+    </button>`;
+  }).join('');
+  openSheet(`<div class="sh-title">对 ${r.name} 动手</div>
+    <div class="sh-sub">${r.rank} · 帝宠 ${S.rivals[id].favor} · 势力 ${S.rivals[id].power} · 心机 ${S.scheme} · 业障 ${S.karma}</div>
+    <div class="sh-hair"></div>${rows}`);
+}
+async function doScheme(type,id){
+  const sc=SCHEMES.find(x=>x.id===type);const r=rivalOf(id);
+  if(!sc||!r)return;
+  if(S.ap<1){showToast('行动力不足');return}
+  if(S.money<sc.cost){showToast('银两不足');return}
+  if(sc.minScheme&&S.scheme<sc.minScheme){showToast('心机不足');return}
+  closeSheet();
+  S.ap--;S.money-=sc.cost;
+  if(type==='ally'){
+    const gain=15+Math.floor(S.attrs.social*.08);
+    const chips=applyEff({bond:{[id]:gain},social:1});
+    S.log.unshift(`拉拢 ${r.name}`);
+    save();renderGame();
+    await scene({
+      locked:true,kind:'hall',who:id,kicker:'人情',title:'递出去的橄榄枝',loc:r.title||'宫中',
+      body:[
+        `你备了厚礼，托人送到${r.name}宫里。礼单写得很客气，客气到挑不出错处。`,
+        gain>=15?'她收下了，还回赠了一盒香料。宫里的人肯跟你走动，很多事情就好办多了。':'她把礼退了回来，只留了一句话：“娘娘有心了。”'
+      ],
+      chips,choices:[{label:'继 续'}]
+    });
+    save();renderGame();return;
+  }
+  S.flags.usedScheme=true;
+  const rate=schemeRate(type,r);
+  const ok=rnd(1,100)<=rate;
+  let eff={},body=[],title='',kick='';
+  if(type==='poison'){
+    kick='暗手';title=ok?'一碗参汤':'打翻的药碗';
+    if(ok){
+      eff={fame:30+Math.floor(r.wit*.15),karma:8,scheme:5,rfavor:{[id]:-18},rpower:{[id]:-10}};
+      body=[
+        '你买通了尚膳监的小太监，在送往她宫里的参汤里加了东西。分量不重，只会让她病上一场，错过这个月的侍寝。',
+        `夜里，${r.name}宫里果然传了太医。第二日，六宫都知道了：她病得蹊跷。`
+      ];
+    }else{
+      eff={fame:-6,karma:4,scheme:-8};
+      body=[
+        '你的人在尚膳监外被拦下了。虽然没有供出你，但那碗汤终究没送出去。',
+        `${r.name}什么都没说，只是从那天起，她的宫女开始留意你宫里的每一个采买。`
+      ];
+      if(rnd(1,100)<=35){S.flags.evidence=(S.flags.evidence||0)+1;body.push('更糟的是，经手的小太监手里还留着你给的那只荷包。');}
+    }
+  }else if(type==='rumor'){
+    kick='流言';title=ok?'满城风雨':'查无此人';
+    if(ok){
+      eff={fame:22,karma:6,rfavor:{[id]:-12},rpower:{[id]:-6}};
+      body=[
+        '你让人把几句话散进浣衣局、尚衣监、御膳房。宫里最不缺的就是嘴，最管不住的也是嘴。',
+        `不出三日，连御前的太监都在悄悄议论${r.name}的出身。她摔了两套茶具，却查不出源头。`
+      ];
+    }else{
+      eff={fame:-8,karma:3};
+      body=[
+        '流言传了一半，就被人按住了。你收买的宫女被带去慎刑司，挨了三十板子，什么都没招。',
+        '可从此以后，你看谁都像在看你。'
+      ];
+    }
+  }else if(type==='frame'){
+    kick='栽赃';title=ok?'封死的宫门':'物证';
+    if(ok){
+      eff={fame:28,karma:9,rpower:{[id]:-18},rfavor:{[id]:-8}};
+      body=[
+        '你把一件不该出现的东西放进她宫里的库房，又让人“恰好”在内务府查账时提起。',
+        `人赃并获。${r.name}被禁足了半个月，宫务也被分走了大半。帝王没有废她，但也没有再去看她。`
+      ];
+      if(rnd(1,100)<=30){S.flags.evidence=(S.flags.evidence||0)+1;body.push('只是那件东西上，到底留了一处经不起查的破绽。');}
+    }else{
+      eff={karma:6,scheme:-10};
+      body=[
+        '东西还没放进库房，她的人就先到了。你安排在那边的小宫女被当场拿下，咬死了是自己贪财。',
+        `你保住了自己，却折了一个人。${r.name}应该已经猜到了，只是没有证据。`
+      ];
+      if(rnd(1,100)<=25){S.flags.evidence=(S.flags.evidence||0)+1;body.push('那个小宫女临被拖走前，回头看了你宫里的方向一眼。');}
+    }
+  }else if(type==='charm'){
+    kick='邀宠';title=ok?'御前一眼':'灯下人散';
+    if(ok){
+      eff={favor:10,fame:8,rfavor:{[id]:-5}};
+      body=[
+        '你换了身月白的衣裳，在帝王必经的廊下“偶遇”。风把袖子吹起来的时候，他果然停了脚步。',
+        `那一晚，敬事房的灯笼落在了你的门前。${r.name}宫里的灯，亮了整夜。`
+      ];
+    }else{
+      eff={favor:1,fame:2};
+      body=[
+        '你在廊下站了半个时辰，只等来一阵风。帝王从另一条路走了，身边陪着的是别人。',
+        '你回宫时，把新裁的衣裳脱下来，叠好，放进了箱底。'
+      ];
+    }
+  }
+  if(S.flags.bloodpin){
+    S.flags.bloodpin=false;
+    body.push('袖中的血玉簪裂了一道细纹。你把它扔进炭盆，看着它慢慢烧黑。');
+  }
+  const chips=applyEff(eff);
+  S.log.unshift(`${sc.name} · ${r.name} · ${ok?'得手':'失手'}`);
+  save();renderGame();
+  await scene({
+    locked:true,kind:'hall',who:id,kicker:kick,title,loc:r.title||'宫中',
+    body,chips,note:ok?'宫斗得手，威望与心机皆有进益。':'宫斗失手，业障与暴露的风险正在累积。',
+    choices:[{label:'继 续'}]
+  });
+  save();renderGame();
+}
+
+/* ---------- 菜单 / 玩法 / 图鉴 ---------- */
+function openMenu(){
+  openSheet(`<div class="sh-title">夺凤</div><div class="sh-sub">承平二十一年 · 深宫棋局</div>
+    <div class="sh-hair"></div>
+    <div class="menu-list">
+      <button class="menu-item" data-menu="close">继续游戏 <small>回到宫中</small></button>
+      <button class="menu-item" data-menu="help">玩法说明 <small>位分 · 产业 · 宫斗 · 孕事</small></button>
+      <button class="menu-item" data-menu="gallery">结局图鉴 <small>${loadGal().endings.length}/${ENDINGS.length}</small></button>
+      <button class="menu-item danger" data-menu="restart">重开一局 <small>当前进度将清空</small></button>
+    </div>
+    <div class="sh-sub" style="margin-top:14px;text-align:center">单文件原型 · v0.1 · 自动存档</div>`);
+}
+function showHelp(){
+  openSheet(`<button class="modal-x" data-menu="close" aria-label="关闭">×</button>
+    <div class="sh-title">玩法说明</div>
+    <div class="help-body">
+      <h4>一、位分是骨架</h4>
+      <p>答应 → 常在 → 贵人 → 嫔 → 妃 → 贵妃 → 皇贵妃 → 皇后。每月入夜时检查三项：<b>威望</b>、<b>产业总等级</b>、<b>门客总战力</b>。三项同时达标才会晋位。</p>
+      <h4>二、每月五点行动力</h4>
+      <p>请安、献艺、练舞、打点、问诊/养颜、祈福、夜探冷宫各耗 1 点。行动力用尽或主动点“入夜”，进入月结：产业收入、侍寝、孕事、后宫暗算、随机风波、晋位判定。</p>
+      <h4>三、产业与门客</h4>
+      <p>产业每月自动产出银两，升级提高产量。招募门客既加战力（晋位门槛），派驻产业还能让该处产出 +20%。同一门客只能驻一处。</p>
+      <h4>四、宫斗与业障</h4>
+      <p>下毒、造谣、栽赃、争宠、拉拢。成功率由属性对抗计算，界面会显示成算。每一次害人都会累积<b>业障</b>；业障过高会触发反噬、夜半惊梦，甚至东窗事发。</p>
+      <h4>五、侍寝与孕事</h4>
+      <p>入夜后按帝宠抽签侍寝。侍寝后可选择是否饮避子汤。怀孕后三月临盆，体质越低越容易难产；顾清和、安胎药、秘药都能降低风险。</p>
+      <h4>六、结局</h4>
+      <p>游戏在第 24 个月结束；登上后位则提前进入终局。结局由位分、银两、子嗣、家族、业障共同决定，共 16 种，可在图鉴中收集。</p>
+      <h4>七、隐藏层</h4>
+      <p>晋贵人后可夜探冷宫。观月娘子、半面郎君、蛊女各有交易，捷径都带代价。旧嫁衣、枯骨梳、无字诏书……拿到手再决定要不要用。</p>
+    </div>`, 'center gal');
+}
+function showGallery(){
+  const gal=loadGal();
+  const seen=gal.endings||[];
+  const achs=gal.achs||[];
+  openSheet(`<button class="modal-x" data-menu="close" aria-label="关闭">×</button>
+    <div class="sh-title">结局图鉴</div>
+    <div class="sh-sub">已收集 ${seen.length}/${ENDINGS.length} · 成就 ${achs.length}/${ACHS.length}</div>
+    <div class="sh-hair"></div>
+    <div class="gallery-grid">${ENDINGS.map(e=>{
+      const got=seen.indexOf(e.id)>=0;
+      return `<div class="gal ${got?'':'locked'}"><b>${got?e.title:'？？？'}</b><span>${got?e.sub:'尚未抵达的终局'}</span></div>`;
+    }).join('')}</div>
+    <div class="sh-hair" style="margin-top:16px"></div>
+    <div class="sh-sub">成就</div>
+    <div class="end-ach" style="justify-content:flex-start">${ACHS.map(a=>{
+      const got=achs.indexOf(a.id)>=0;
+      return `<span style="${got?'':'opacity:.35'}">${got?a.name:'？？？'}</span>`;
+    }).join('')}</div>`, 'center gal');
+}
+$('sheetBody').addEventListener('click',e=>{
+  const t=e.target.closest('[data-assign-ret],[data-scheme],[data-menu]');
+  if(!t)return;
+  if(t.dataset.assignRet!==undefined){assignRetainer(t.dataset.assignRet,t.dataset.bid);return}
+  if(t.dataset.scheme){doScheme(t.dataset.scheme,t.dataset.target);return}
+  if(t.dataset.menu){
+    const m=t.dataset.menu;
+    if(m==='close')closeSheet();
+    else if(m==='help')showHelp();
+    else if(m==='gallery')showGallery();
+    else if(m==='art')window.open('art.html','_blank');
+    else if(m==='restart'){
+      if(confirm('确定重开一局？当前进度会清空，结局图鉴保留。')){
+        try{localStorage.removeItem(SAVE_KEY)}catch(err){}
+        location.reload();
+      }
+    }
+  }
+});
+
+/* ---------- 场景系统 ---------- */
+function scene(cfg){
+  return new Promise(resolve=>{
+    sceneCfg=cfg;sceneResolve=resolve;busy=true;
+    $('scCh').textContent=cfg.ch||monthCN(S?S.month:1);
+    $('scLoc').textContent=cfg.loc||'';
+    $('scKicker').textContent=cfg.kicker||'';
+    $('scTitle').textContent=cfg.title||'';
+    const aw=$('scArtWrap');
+    aw.className='scene-art-wrap'+(cfg.who?' with-figure':'')+' kind-'+(cfg.kind||'hall');
+    aw.innerHTML=sceneArtHTML(cfg.kind||'hall',cfg.who);
+    $('scBody').innerHTML=(Array.isArray(cfg.body)?cfg.body:[cfg.body]).filter(Boolean).map(p=>`<p>${p}</p>`).join('')
+      +(cfg.chips?chipsHTML(cfg.chips):'');
+    $('scNote').textContent=cfg.note||'';
+    $('scBack').style.display=cfg.locked?'none':'';
+    const box=$('scChoices');box.innerHTML='';
+    const choices=cfg.choices&&cfg.choices.length?cfg.choices:[{label:'继 续'}];
+    choices.forEach((c,i)=>{
+      const b=document.createElement('button');
+      b.className='choice';
+      b.innerHTML=`<b>${esc(c.label)}</b>${c.hint?`<span>${esc(c.hint)}</span>`:''}${c.cost?`<span class="ch-cost">${c.cost}两</span>`:''}`;
+      b.onclick=()=>{
+        if(!c.run&&!c.eff&&!c.cost&&!c.after){closeScene();if(cfg.onClose)cfg.onClose();}
+        else resolveChoice(cfg,c,b);
+      };
+      if(c.disabled)b.disabled=true;
+      box.appendChild(b);
+    });
+    $('scene').hidden=false;
+    $('scene').scrollTop=0;
+    const sc=$('scene').querySelector('.scene-scroll');if(sc)sc.scrollTop=0;
+  });
+}
+function closeScene(){
+  if(!sceneResolve)return;
+  const r=sceneResolve;sceneResolve=null;sceneCfg=null;busy=nightLock;
+  $('scene').hidden=true;
+  r();
+}
+async function resolveChoice(cfg,c,btn){
+  if(btn&&btn.disabled)return;
+  if(c.cost&&S.money<c.cost){showToast('银两不足');return;}
+  const all=$('scChoices').querySelectorAll('.choice');
+  all.forEach(x=>x.disabled=true);
+  let out=null;
+  try{out=c.run?await c.run():null}catch(err){console.error(err);out='……'}
+  let text='',eff=c.eff||null;
+  if(typeof out==='string')text=out;
+  else if(out){text=out.text||'';if(out.eff)eff=Object.assign({},eff||{},out.eff);}
+  const chips=applyEff(eff);
+  if(c.log)S.log.unshift(c.log);
+  save();
+  let body=$('scBody');
+  if(text||chips.length){
+    const div=document.createElement('div');
+    div.className='scene-result';
+    div.innerHTML=(text?`<p>${text}</p>`:'')+chipsHTML(chips);
+    body.appendChild(div);
+    setTimeout(()=>$('scene').querySelector('.scene-scroll').scrollTo({top:9999,behavior:'smooth'}),40);
+  }
+  if(c.after)await c.after();
+  const box=$('scChoices');box.innerHTML='';
+  const b=document.createElement('button');
+  b.className='choice';
+  b.innerHTML='<b>继 续</b>';
+  b.onclick=()=>{closeScene();if(cfg.onClose)cfg.onClose();};
+  box.appendChild(b);
+  if(S)renderGame();
+}
+$('scBack').onclick=()=>{
+  if(!sceneResolve)return;
+  if(sceneCfg&&sceneCfg.locked){showToast('此段剧情不可退出');return;}
+  S && S.log.unshift('在「'+(sceneCfg?sceneCfg.title:'')+'」中暂且退开');
+  closeScene();if(S)renderGame();
+};
+
+/* ---------- 行动分发 ---------- */
+const ACTIONS={kunning:actKunning,garden:actGarden,changxin:actChangxin,shanggong:actShanggong,taiyi:actTaiyi,fotang:actFotang,lenggong:actLenggong};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function askPlace(id){
+  if(busy||!S)return;
+  const p=PLACES.find(x=>x.id===id);if(!p)return;
+  if(S.rank<p.minRank){showToast('晋 '+RANKS[p.minRank].name+' 后解锁');return}
+  if(S.ap<1){showToast('行动力不足，该入夜了');return}
+  if(S.money<p.cost){showToast('银两不足，需 '+p.cost+' 两');return}
+  openSheet(`<div class="sh-title">${p.name}</div>
+    <div class="sh-sub">${p.sub}　·　消耗 1 点行动${p.cost?' · '+p.cost+' 两':''}　·　现有行动 ${S.ap} 点</div>
+    <div class="sh-hair"></div>
+    <div class="sh-sub" style="font-size:13px;color:#b9c6bd;line-height:1.8;margin-top:2px">${p.desc}</div>
+    <div class="menu-list" style="margin-top:12px">
+      <button class="menu-item" id="plGo">前往 · ${p.name} <small>${p.tag}</small></button>
+      <button class="menu-item" id="plNo">再想想 <small>不消耗行动</small></button>
+    </div>`, 'dlg');
+  $('plNo').onclick=closeSheet;
+  $('plGo').onclick=()=>{closeSheet();doPlace(id)};
+}
+
+async function doPlace(id){
+  if(busy)return;
+  const p=PLACES.find(x=>x.id===id);if(!p)return;
+  if(S.rank<p.minRank){showToast('晋 '+RANKS[p.minRank].name+' 后解锁');return}
+  if(S.ap<1){showToast('行动力不足，该入夜了');return}
+  if(S.money<p.cost){showToast('银两不足，需 '+p.cost+' 两');return}
+  S.ap--;S.money-=p.cost;
+  save();renderGame();
+  await ACTIONS[id]();
+  save();renderGame();
+}
+
+/* ---------- 月结：入夜 ---------- */
+async function nightfall(){
+  if(busy||!S||S.ended)return;
+  if(S.ap>0&&!confirm(`尚有 ${S.ap} 点行动力，确定入夜？未用的行动力不会留存。`))return;
+  nightLock=true;busy=true;
+  const report=[];
+  S.flags.noServe=false;
+  const income=totalIncome();
+  S.money+=income;
+  report.push(`产业与月例入账 ${fmt(income)} 两`);
+  S.log.unshift(`第 ${S.month} 月月结，入账 ${fmt(income)} 两`);
+  renderGame();
+  await wait(240);
+
+  await rivalNight(report);
+  if(S.ended){nightLock=false;busy=false;return}
+
+  await serveNight(report);
+  if(S.ended){nightLock=false;busy=false;return}
+
+  if(S.pregnant)await pregnancyNight(report);
+  if(S.ended){nightLock=false;busy=false;return}
+
+  await eventNight(report);
+  if(S.ended){nightLock=false;busy=false;return}
+
+  const exposed=await karmaNight(report);
+  if(exposed||S.ended){nightLock=false;busy=false;return}
+
+  const ended=await promoteCheck();
+  if(ended){nightLock=false;busy=false;return}
+
+  if(S.month>=24){
+    finishGame('time');
+    nightLock=false;busy=false;
+    return;
+  }
+  S.month++;S.ap=5;
+  monthlyDrift(report);
+  save();renderGame();
+  nightLock=false;busy=false;
+  showMonthSummary(report);
+}
+
+async function rivalNight(report){
+  const eligible=RIVALS.filter(r=>S.bonds[r.id]<60&&S.rivals[r.id].favor>=8);
+  if(!eligible.length)return;
+  const chance=clamp(5+S.favor*.16-S.attrs.wit*.08+(S.flags.grudge?4:0),2,30);
+  if(rnd(1,100)>chance)return;
+  const r=pick(eligible);
+  const def=S.attrs.wit+rnd(0,30);
+  const atk=r.wit+rnd(0,24);
+  if(def>=atk){
+    const chips=applyEff({scheme:2});
+    S.log.unshift(`识破 ${r.name} 的暗手`);
+    report.push(`${r.name}暗中使绊，被你识破`);
+    await scene({
+      locked:true,kind:'hall',who:r.id,kicker:'后宫暗流',title:'被按住的手',loc:r.title||'宫中',
+      body:[
+        `你宫里的小宫女今日心神不宁，说话时总往袖子里瞟。你让人把她带下去一问，果然问出了东西。`,
+        `是${r.name}的人递来的“问候”。你把那包药粉倒进香炉，看着它烧成一小撮黑灰。`,
+        '这宫里，没有谁会无缘无故地恨你。可也没有谁会无缘无故地放过你。'
+      ],
+      chips,choices:[{label:'记 下'}]
+    });
+    return;
+  }
+  let eff={fame:-rnd(5,11),favor:-rnd(3,6)};
+  /* 流言既已传入帝王耳中，本月不再翻牌，与侍寝流程保持一致 */
+  S.flags.noServe=true;
+  let body=[
+    '半夜，你被一阵凉意惊醒。窗子开着，妆台上的东西被动过，镜面朝下扣着。',
+    `第二天一早，宫里就传开了：${r.name}身边的人说，你的宫女夜里私会外男。人证物证，来得太快，快得像早就备好了。`,
+    '帝王没有问，只是这个月再没翻过你的牌子。'
+  ];
+  if(S.pregnant&&rnd(1,100)<=38){
+    if(rnd(1,100)<=45){
+      S.pregnant=null;
+      eff.health=-10;eff.karma=4;
+      body.push('你捂着腹部，感觉到一阵温热的坠落。太医赶来时，已经晚了。');
+    }else{
+      body.push('你死死护住腹部，直到宫女们把人拉开。孩子还在，可你出了一身冷汗。');
+      eff.health=-3;
+    }
+  }
+  const chips=applyEff(eff);
+  S.log.unshift(`遭 ${r.name} 暗算`);
+  report.push(`遭${r.name}暗算，威望与帝宠受损`);
+  await scene({
+    locked:true,kind:'hall',who:r.id,kicker:'后宫暗流',title:'夜里开着的窗',loc:r.title||'宫中',
+    body,chips,choices:[{label:'忍 下'}]
+  });
+}
+
+async function serveNight(report){
+  if(S.pregnant){
+    report.push('有孕在身，敬事房未再翻牌');
+    return;
+  }
+  if(S.flags.noServe){
+    report.push('流言未散，敬事房今夜没有翻你的牌子');
+    return;
+  }
+  const playerW=24+S.favor*2.2+Math.floor(S.attrs.charm*.15);
+  const pool=RIVALS.map(r=>({id:r.id,w:Math.max(4,S.rivals[r.id].favor)}));
+  const total=playerW+pool.reduce((n,x)=>n+x.w,0);
+  const roll=rnd(1,Math.max(1,Math.round(total)));
+  if(roll>playerW){
+    let acc=Math.round(playerW);
+    let chosen=pool[0];
+    for(const x of pool){acc+=x.w;if(roll<=acc){chosen=x;break}}
+    const rr=rivalOf(chosen.id);
+    report.push(`今夜敬事房的灯笼落在了${rr.name}门前`);
+    S.rivals[chosen.id].favor=clamp(S.rivals[chosen.id].favor+1,0,100);
+    return;
+  }
+  let declined=false;
+  await scene({
+    locked:true,kind:'night',who:'emperor',kicker:'侍寝',title:'今夜承恩',loc:'养心殿 · 内殿',
+    body:[
+      '敬事房的灯笼在你的门前停下。你被宫人伺候着沐浴、更衣，裹进一床锦被，抬进养心殿。',
+      '殿里只点了一盏灯。帝王靠在榻上看折子，听见动静，抬眼看了你一会儿。',
+      '“过来。”他说。'
+    ],
+    choices:[
+      {label:'婉转承欢',hint:'帝宠 +8~14',run:()=>{
+        S.served++;
+        const f=rnd(8,14)+Math.floor(S.attrs.charm*.03);
+        return {text:'帐子落下来。他今夜心情不坏，甚至在你耳边说了两句闲话。你听着，应着，把每一个字都记在心里。',eff:{favor:f}};
+      }},
+      {label:'清谈伴驾',hint:'帝宠 +6~11 · 心机 +2',run:()=>{
+        S.served++;
+        const f=rnd(6,11)+Math.floor(S.attrs.wit*.03);
+        return {text:'你没有急着靠近，只替他续了茶，顺着折子上的话头说了两句。他有些意外，竟与你聊到了三更。',eff:{favor:f,scheme:2}};
+      }},
+      {label:'称病告退',hint:'帝宠 -4 · 保全自身',run:()=>{
+        declined=true;
+        return {text:'你伏在榻边，轻声说身子不适。他沉默片刻，挥了挥手：“回去吧。”你退出去时，听见他翻过了一页折子。',eff:{favor:-4}};
+      }}
+    ]
+  });
+  if(declined||S.ended)return;
+  if(S.pregnant)return;
+  const chance=clamp(Math.round(S.attrs.health*.5),5,45);
+  if(rnd(1,100)<=chance){
+    S.pregnant={m:1,fresh:true};
+    S.log.unshift('诊出喜脉');
+    report.push('太医诊出喜脉');
+    await scene({
+      locked:true,kind:'night',who:'emperor',kicker:'喜脉',title:'脉象里的第二条命',loc:'养心殿 · 偏殿',
+      body:[
+        '太医的手指搭在你腕上，停了很久，忽然跪下去：“恭喜娘娘，是喜脉。”',
+        '殿里的人都跪下了。你坐在榻上，听见自己的心跳，比方才更响。',
+        '这宫里，孩子是恩宠，是筹码，也是别人眼里最软的一处。'
+      ],
+      chips:[{t:'有孕 · 三月临盆',cls:'gold'}],
+      choices:[{label:'抚 上 小 腹'}]
+    });
+  }else{
+    report.push('一夜承恩，未有喜讯');
+  }
+}
+
+async function pregnancyNight(report){
+  if(!S.pregnant)return;
+  if(S.pregnant.fresh){
+    S.pregnant.fresh=false;
+    return;
+  }
+  S.pregnant.m++;
+  if(S.pregnant.m<3){
+    report.push(`有孕 ${S.pregnant.m} 月，胎象尚稳`);
+    return;
+  }
+  await birthScene(report);
+}
+
+async function birthScene(report){
+  const risk=birthRiskBase();
+  const difficult=rnd(1,100)<=risk;
+  const boy=rnd(1,100)<=52;
+  if(difficult){
+    await scene({
+      locked:true,kind:'night',kicker:'产房 · 生死',title:'保母，还是保子',loc:'储秀宫 · 产房',
+      body:[
+        '羊水破在半夜。稳婆的手上全是血，太医在外间来回踱步。',
+        `“娘娘，胎位不正……”稳婆跪在榻前，声音发抖，“只能保一个。”`,
+        '烛火晃了一下。你疼得几乎看不清她的脸。'
+      ],
+      choices:[
+        {label:'保 母',hint:'失去孩子 · 体质 -8 · 帝宠 -5',run:()=>{
+          S.pregnant=null;S.flags.safeBirth=false;
+          return {text:'你听见一声很轻的啼哭，然后就没了。稳婆说，是个成形的男胎。你闭上眼睛，眼泪从眼角滑进鬓发里。',eff:{health:-8,favor:-5,fame:-5}};
+        }},
+        {label:'保 子',hint:'四成可能香消玉殒',run:()=>{
+          if(rnd(1,100)<=40){
+            S.flags.dead=true;
+            S.children++;
+            S.pregnant=null;S.flags.safeBirth=false;
+            return {text:'你用尽最后的力气说：“保孩子。”血一层层漫开，烛火越来越远。最后听见的，是一声嘹亮的啼哭。',eff:{}};
+          }
+          S.children++;
+          S.pregnant=null;S.flags.safeBirth=false;
+          return {text:'你几乎把牙咬碎。不知过了多久，一声啼哭划破产房的死寂。稳婆抱着孩子跪下来：“恭喜娘娘，是位小皇子。”',eff:{health:-16,favor:5,fame:12}};
+        }}
+      ]
+    });
+    if(S.flags.dead){
+      report.push('难产血崩');
+      finishGame('death');
+      return;
+    }
+    report.push(S.children>0?'难产，母子平安':'难产，未能保住孩子');
+    return;
+  }
+  const eff={health:-5,favor:5,fame:12};
+  let extra='';
+  if(S.rank<3&&rnd(1,100)<=35){
+    eff.fame+=10;eff.favor-=5;
+    extra='孩子满月那日，皇后宫里来人，说皇嗣尊贵，应由高位抚育。你抱着孩子不肯松手，最后还是被嬷嬷接了过去。';
+  }
+  S.children++;S.pregnant=null;S.flags.safeBirth=false;
+  const chips=applyEff(eff);
+  chips.unshift({t:'子嗣 +1',cls:'gold'});
+  S.log.unshift('诞下'+(boy?'皇子':'公主'));
+  report.push('诞下'+(boy?'皇子':'公主'));
+  await scene({
+    locked:true,kind:'night',kicker:'生产',title:boy?'麟儿':'明珠',loc:'储秀宫 · 产房',
+    body:[
+      '天快亮的时候，孩子出生了。稳婆把他擦干净，包进早就备好的锦缎里，抱到你枕边。',
+      '他那么小，皱巴巴的，眼睛还睁不开。你伸出手指碰了碰他的脸，忽然想哭。',
+      extra||'帝王来看过一次，站了片刻，给孩子赐了名。你抱着孩子，觉得这宫里的风，好像也没那么冷了。'
+    ],
+    chips,choices:[{label:'抱 紧 他'}]
+  });
+}
+
+/* ---------- 剧情事件 ---------- */
+const EVENTS=[
+  {id:'spring',cond:()=>S.month>=2,kind:'garden',kicker:'后宫风波 · 圣心',title:'春日宴',loc:'御花园 · 长春亭',
+   body:[
+     '太后在御花园设春日宴，六宫皆至。席间行酒令，轮到献礼时，所有人的目光都落在你身上。',
+     '皇后坐在太后下首，笑意淡淡。你手边的礼盒里，只有一柄家传的旧玉镯。'
+   ],
+   choices:[
+     {label:'献上家传玉镯',cost:200,hint:'银两 -200 · 威望 +30 · 帝宠 +6',run:()=>({
+       text:'玉镯不算顶好，胜在旧。太后拿在手里看了两眼，说了句“有心”。皇后的笑淡了一分。',
+       eff:{money:-200,fame:30,favor:6,bond:{xiao:5}}
+     })},
+     {label:'献上百卷手抄经',hint:'业障 -6 · 威望 +14 · 体质 -3',run:()=>({
+       text:'你让人抬上一只樟木箱，里面是百日来抄的经卷。太后翻了翻，叹道：“是个静得下心的。”',
+       eff:{karma:-6,fame:14,health:-3}
+     })},
+     {label:'称病不去',hint:'帝宠 -4 · 威望 -6 · 体质 +3',run:()=>({
+       text:'你留在宫里，听着远处的丝竹声，睡了一个很长的午觉。醒来时，宫女说，席上有人提起你，说你“福薄”。',
+       eff:{favor:-4,fame:-6,health:3}
+     })}
+   ]},
+  {id:'tea',kind:'hall',kicker:'后宫风波 · 阴谋',title:'茶中异香',loc:'储秀宫 · 内殿',
+   body:[
+     '新来的小宫女捧上一盏茶，说是皇后宫里赏的。你揭开盖子，闻到一丝极淡的苦杏仁味。',
+     '你的手停在半空。'
+   ],
+   choices:[
+     {label:'不动声色，倒掉暗查',hint:'心机判定',run:()=>{
+       if(S.attrs.wit+rnd(0,30)>=58){
+         S.flags.intel=true;
+         return {text:'你把茶泼进花盆，看着那株兰草第二天枯了半边。顺着送茶的宫女查下去，线索断在一个已经“失足落井”的小太监身上。',eff:{scheme:5,fame:6,flag:{intel:true}}};
+       }
+       return {text:'你倒掉了茶，却没查出什么。只是从此以后，你宫里所有入口的东西，都要经过三道银针。',eff:{scheme:2,health:-2}};
+     }},
+     {label:'照常饮下',hint:'体质 -8 · 心机 +2',run:()=>({
+       text:'你端起茶，慢慢喝完了。夜里腹痛如绞，太医说是吃了不干净的东西。你在床上躺了三天，瘦了一圈。',
+       eff:{health:-8,scheme:2}
+     })},
+     {label:'赏给送茶的宫女',hint:'业障 +8 · 心机 +3',run:()=>({
+       text:'你把茶推回去：“本宫赏你。”小宫女脸色煞白，抖着手喝了两口。第二天，她被抬出了宫。',
+       eff:{karma:8,scheme:3}
+     })}
+   ]},
+  {id:'letter',kind:'hall',kicker:'后宫风波 · 家族',title:'家书',loc:'储秀宫 · 灯下',
+   body:[
+     '家书从宫外递进来，父亲的字迹比从前抖。信里说，族中要修祠堂，弟弟要捐官，处处都要银子。',
+     '信末只有一句：“女儿在宫中，可还顺遂？”'
+   ],
+   choices:[
+     {label:'寄回三百两',hint:'银两 -300 · 家族影响 +8 · 威望 +6',run:()=>({
+       text:'你把攒了半年的银子封好，托人送出宫。回信很快，说祠堂的匾额已经重新漆过，你的名字写在了最上头。',
+       eff:{money:-300,fame:6,flag:{familyBoost:(S.flags.familyBoost||0)+8}}
+     })},
+     {label:'回信诉苦，只寄五十两',hint:'银两 -50 · 家族影响 -4 · 心机 +2',run:()=>({
+       text:'你写了很长的一封信，说宫里的难处，说人情冷暖。银子只寄了五十两。父亲没有再回信。',
+       eff:{money:-50,scheme:2,flag:{familyBoost:(S.flags.familyBoost||0)-4}}
+     })},
+     {label:'不回信',hint:'家族影响 -8 · 心机 +3',run:()=>({
+       text:'你把信压在妆匣最底下。夜里听见风打窗纸，忽然想起小时候父亲教你写字的样子。',
+       eff:{scheme:3,flag:{familyBoost:(S.flags.familyBoost||0)-8}}
+     })}
+   ]},
+  {id:'rumorMe',kind:'hall',kicker:'后宫风波 · 流言',title:'满宫流言',loc:'储秀宫',
+   body:[
+     '不知从哪里传起的话：说你以媚术惑主，说你的位分是睡出来的。话越传越难听，连御前的小太监看你的眼神都变了。',
+     '你坐在窗前，听见廊下有人在笑。'
+   ],
+   choices:[
+     {label:'顺着流言追查',hint:'智慧判定',run:()=>{
+       if(S.attrs.wit+rnd(0,32)>=66)return {text:'你从浣衣局一个洗衣宫女查起，顺藤摸瓜，查到了苏念宫里。你没有声张，只让人把证据递到了皇后案头。第二天，流言就停了。',eff:{fame:18,scheme:4,bond:{su:-10}}};
+       return {text:'你查了半个月，越查越乱。流言没停，反而多了个“心虚”的说法。',eff:{fame:-12,favor:-4}};
+     }},
+     {label:'使银子压下',cost:150,hint:'银两 -150 · 威望 +4 · 业障 +2',run:()=>({
+       text:'银子递出去，几张说着闲话的嘴就闭上了。可你知道，嘴闭上了，心里的账还在。',
+       eff:{money:-150,fame:4,karma:2}
+     })},
+     {label:'置之不理',hint:'威望 -8 · 帝宠 -4',run:()=>({
+       text:'你什么都没做。流言像风，吹过一阵总会停。可帝王这个月来你宫里的次数，也像风一样少了。',
+       eff:{fame:-8,favor:-4}
+     })}
+   ]},
+  {id:'maid',kind:'hall',kicker:'后宫风波 · 人心',title:'宫女告密',loc:'储秀宫 · 耳房',
+   body:[
+     '你宫里的二等宫女跪在地上，说她听见有人要往你妆奁里藏东西。',
+     '“是谁的人？”你问。她不敢抬头，只说：“奴婢只听见……贵妃宫里的名字。”'
+   ],
+   choices:[
+     {label:'赏银封口，留她在身边',cost:100,hint:'银两 -100 · 心机 +3',run:()=>({
+       text:'你赏了她一对银锞子，让她把嘴闭紧。她磕了三个头。你知道这种人能用，但不能信。',
+       eff:{money:-100,scheme:3}
+     })},
+     {label:'杖毙，以儆效尤',hint:'业障 +10 · 威望 +10',run:()=>({
+       text:'你让人把她拖出去。板子声一下一下，隔着两道墙都听得见。从此你宫里再没人敢多嘴。',
+       eff:{karma:10,fame:10}
+     })},
+     {label:'带她去见皇后',hint:'威望 +14 · 皇后好感 +10',run:()=>({
+       text:'你带着人去了坤宁宫。皇后听完，只说了句“知道了”。第二天，贵妃宫里的两个嬷嬷被调去了浣衣局。',
+       eff:{fame:14,bond:{xiao:10,murong:-8}}
+     })}
+   ]},
+  {id:'visit',kind:'night',who:'emperor',kicker:'后宫风波 · 圣心',title:'帝王夜访',loc:'储秀宫 · 内殿',
+   body:[
+     '没有敬事房的通知，帝王忽然来了。你来不及换衣裳，只来得及把头发拢好。',
+     '他坐在你平日读书的窗前，翻了两页你批注过的书。'
+   ],
+   choices:[
+     {label:'奉茶清谈',hint:'帝宠 +8 · 威望 +4 · 心机 +2',run:()=>({
+       text:'你煮了一壶旧茶，陪他坐了半个时辰。他说的都是闲话，可你听得出，今晚他不想一个人。',
+       eff:{favor:8,fame:4,scheme:2}
+     })},
+     {label:'以舞相迎',hint:'容貌 ≥ 60 则大获圣心',run:()=>{
+       if(S.attrs.charm>=60)return {text:'你赤足在灯下转了一圈，裙摆扫过他的靴面。他伸手扶住你的腰，低声说：“你倒大胆。”',eff:{favor:12,fame:6}};
+       return {text:'你跳得急，踩到了裙角。他扶了你一把，笑了笑，气氛却淡了。',eff:{favor:3,fame:-2}};
+     }},
+     {label:'称病不见',hint:'帝宠 -6 · 体质 +2',run:()=>({
+       text:'你让宫女出去回话，说娘娘吃了药，已经睡下了。他站了一会儿，转身走了。你睁开眼，看着帐顶。',
+       eff:{favor:-6,health:2}
+     })}
+   ]},
+  {id:'drought',kind:'temple',kicker:'后宫风波 · 天灾',title:'边关旱情',loc:'佛堂',
+   body:[
+     '边关大旱，流民北迁。帝王下旨六宫节俭，太后带头捐了首饰。',
+     '你宫里的银子不算多，可这时候，所有人都在看谁捐了多少。'
+   ],
+   choices:[
+     {label:'捐银五百',cost:500,hint:'银两 -500 · 威望 +45 · 业障 -10',run:()=>({
+       text:'五百两抬出去的时候，你宫里这个月连炭都减了半。可满宫都在传：答应娘娘仁义。',
+       eff:{money:-500,fame:45,karma:-10}
+     })},
+     {label:'抄经百卷祈福',hint:'威望 +15 · 业障 -4 · 体质 -3',run:()=>({
+       text:'你抄了整整七天的经。手腕肿了，心却静下来。捐册上没有你的名字，太后却让人赏了一串佛珠。',
+       eff:{fame:15,karma:-4,health:-3}
+     })},
+     {label:'不捐',hint:'威望 -12 · 帝宠 -3',run:()=>({
+       text:'你什么都没捐。捐册传遍六宫时，有人在背后点了你的名字。',
+       eff:{fame:-12,favor:-3}
+     })}
+   ]},
+  {id:'gift',kind:'hall',who:'murong',kicker:'后宫风波 · 站队',title:'贵妃的赏赐',loc:'翊坤宫',
+   body:[
+     '贵妃慕容华派心腹送来一匣东珠，说是“看着适合你”。',
+     '东珠颗颗浑圆，价值不菲。匣底压着一张字条：改日来翊坤宫坐坐。'
+   ],
+   choices:[
+     {label:'收下东珠',hint:'贵妃好感 +12 · 帝宠 -2',run:()=>({
+       text:'你收下匣子，让宫女送了一盆素心兰过去。从此你被划进了贵妃的圈子里，有人靠过来，也有人躲开。',
+       eff:{bond:{murong:12},favor:-2}
+     })},
+     {label:'原物退回',hint:'威望 +8 · 贵妃好感 -10',run:()=>({
+       text:'你把匣子原封不动退回去，只附了一张谢帖。贵妃宫里的人脸色很难看。你知道，这梁子结下了。',
+       eff:{fame:8,bond:{murong:-10}}
+     })},
+     {label:'收下，转手献给皇后',hint:'皇后好感 +14 · 贵妃好感 -20 · 业障 +3',run:()=>({
+       text:'你把东珠送进坤宁宫，说是“得了好东西，不敢独享”。皇后看了你一眼，笑了。那是她第一次对你真心笑。',
+       eff:{bond:{xiao:14,murong:-20},karma:3,fame:5}
+     })}
+   ]},
+  {id:'eunuch',kind:'hall',kicker:'后宫风波 · 人心',title:'内务府的算盘',loc:'内务府 · 廊下',
+   body:[
+     '内务府来送月例，银子比册子上少了三成。管事的太监笑眯眯地站着，说最近银库紧。',
+     '你看见他袖口的金线，比你的还新。'
+   ],
+   choices:[
+     {label:'塞一百两过去',cost:100,hint:'银两 -100 · 心机 +2',run:()=>({
+       text:'你又递了一百两。管事的笑得更深了，下个月的月例果然足额送来。',
+       eff:{money:-100,scheme:2}
+     })},
+     {label:'当场点破',hint:'威望 +8 · 后续有人记恨',run:()=>({
+       text:'你当着他的面把册子上的数念了一遍。他脸上的笑僵了，跪下说“奴才该死”。你知道，这罚迟早会从别处找回来。',
+       eff:{fame:8,scheme:2,flag:{grudge:true}}
+     })},
+     {label:'告到皇后那里',hint:'威望 +14 · 皇后好感 +6',run:()=>({
+       text:'皇后管着六宫，最恨内务府伸手。第二日，那个管事就被换了。你得了名，也得了皇后一分看重。',
+       eff:{fame:14,bond:{xiao:6}}
+     })}
+   ]},
+  {id:'dream',cond:()=>S.karma>=30,kind:'night',kicker:'后宫风波 · 反噬',title:'夜半惊梦',loc:'储秀宫 · 寝殿',
+   body:[
+     '你梦见一个穿白衣的女人站在床前，看不清脸。她手里拿着一只碗，碗里是黑沉沉的药。',
+     '你惊醒时，天还没亮。帐子外面，好像有个人站了一会儿，才转身走了。'
+   ],
+   choices:[
+     {label:'焚香祈福',cost:50,hint:'银两 -50 · 业障 -8',run:()=>({
+       text:'你披衣去了佛堂，跪到东方发白。香灰落了一地，你心里那点发毛的凉意才慢慢退下去。',
+       eff:{money:-50,karma:-8}
+     })},
+     {label:'请太医来看',cost:30,hint:'银两 -30 · 体质 +2 · 业障 +2',run:()=>({
+       text:'太医说你是思虑过重，开了安神的方子。药很苦，你喝下去，又梦见了那个女人。',
+       eff:{money:-30,health:2,karma:2}
+     })},
+     {label:'压下去，不声张',hint:'体质 -5 · 业障 +2',run:()=>({
+       text:'你让宫女把灯全点上，坐到天亮。第二天照常去请安，谁也没看出你一夜没睡。',
+       eff:{health:-5,karma:2}
+     })}
+   ]},
+  {id:'push',cond:()=>!!S.pregnant,kind:'hall',kicker:'后宫风波 · 子嗣',title:'御花园里的手',loc:'御花园 · 石桥',
+   body:[
+     '你扶着宫女的手在石桥上慢慢走。身后忽然一阵香风，有人贴着你挤了过去。',
+     '你脚下一滑，整个人往栏杆上撞去。'
+   ],
+   choices:[
+     {label:'死死护住腹部',hint:'体质判定',run:()=>{
+       if(S.attrs.health+rnd(0,40)>=62)return {text:'你一把抓住栏杆，另一只手死死护住肚子。宫女们吓得跪下，你喘了很久，才感觉到腹中轻轻一动。',eff:{health:-2,fame:4}};
+       S.pregnant=null;
+       return {text:'你撞在栏杆上，腹部一阵绞痛。太医来时，已经见红了。',eff:{health:-10,favor:-4}};
+     }},
+     {label:'大声呼救',hint:'威望 +8',run:()=>{
+       if(rnd(1,100)<=85)return {text:'你喊了一声“护驾”。侍卫和宫女一起冲上来，那个撞你的人被当场按住——是贵妃宫里的小太监。',eff:{fame:8,favor:4}};
+       S.pregnant=null;
+       return {text:'你喊出声，可人已经被撞开了。孩子没能保住。',eff:{health:-9,favor:-3}};
+     }},
+     {label:'事后追查',hint:'心机 +4',run:()=>{
+       if(rnd(1,100)<=70){
+         S.flags.intel=true;
+         return {text:'你没有声张，只让人去查那个太监近日的走动。线索指向翊坤宫。你记下了，却没有立刻动。',eff:{scheme:4,fame:6}};
+       }
+       S.pregnant=null;
+       return {text:'你查得太急，惊动了人。孩子没能保住，线索也断了。',eff:{health:-10,scheme:2}};
+     }}
+   ]},
+  {id:'friend',cond:()=>S.rank>=2,kind:'hall',who:'ye',kicker:'后宫风波 · 人心',title:'旧友相求',loc:'咸福宫',
+   body:[
+     '叶知秋来求你。她宫里的炭火被克扣了，病中的嬷嬷也断了药。她说得很平静，只在你递茶时，手指抖了一下。',
+     '她从前帮过你一次。'
+   ],
+   choices:[
+     {label:'送炭送药，再给她一百两',cost:100,hint:'银两 -100 · 好感 +15 · 威望 +8',run:()=>({
+       text:'你让人抬了两筐银霜炭过去，又请了太医。叶知秋站在门口，看了你很久，说：“这份情，我记着。”',
+       eff:{money:-100,bond:{ye:15},fame:8}
+     })},
+     {label:'只送些炭，不多沾',hint:'好感 +5 · 心机 +2',run:()=>({
+       text:'你送了一筐炭，没有多留。她道了谢，也没有再说什么。你们都明白，这宫里，能顾好自己已经不易。',
+       eff:{bond:{ye:5},scheme:2}
+     })},
+     {label:'婉言拒绝',hint:'好感 -10 · 心机 +3',run:()=>({
+       text:'你说自己宫里也紧。她点点头，起身告退，背影比来时更直。你知道，有些人一旦错过，就再也拉不回来了。',
+       eff:{bond:{ye:-10},scheme:3}
+     })}
+   ]}
+];
+
+const FIXED_EVENTS=[
+  {id:'newshow',month:6,kind:'garden',kicker:'主线 · 选秀',title:'新秀入宫',loc:'御花园 · 储秀宫',
+   body:[
+     '又一批新人入宫了。她们站在储秀宫的院子里，穿着一样的衣裳，眼睛却各有各的亮法。',
+     '你从廊下走过，看见其中一个姑娘抬头看你。那眼神，和你当年一模一样。'
+   ],
+   choices:[
+     {label:'提点她们几句',hint:'威望 +12 · 白露好感 +10',run:()=>({
+       text:'你停下脚步，说了几句宫里的规矩，又让人给她们添了炭。几个姑娘跪下来谢恩，眼睛都红了。',
+       eff:{fame:12,bond:{bai:10},favor:2}
+     })},
+     {label:'给个下马威',hint:'威望 +16 · 业障 +4 · 新秀畏惧',run:()=>({
+       text:'你让掌事嬷嬷立了规矩，迟到的、多嘴的，各领了罚。院子里静得落针可闻。你满意地走了。',
+       eff:{fame:16,karma:4}
+     })},
+     {label:'远远看着，什么都不做',hint:'心机 +4',run:()=>({
+       text:'你没有停步。新人一批批进来，旧的慢慢被忘掉。你只要记得自己是怎么走过来的就好。',
+       eff:{scheme:4}
+     })}
+   ]},
+  {id:'newyear',month:12,kind:'hall',who:'emperor',kicker:'主线 · 年宴',title:'除夕夜宴',loc:'太和殿',
+   body:[
+     '除夕。太和殿灯火通明，六宫按位分列坐。你坐在自己的位置上，能看见帝王，也能看见皇后。',
+     '酒过三巡，太后忽然说：“今年，谁给哀家弹一曲？”'
+   ],
+   choices:[
+     {label:'起身献艺',hint:'才华判定',run:()=>{
+       if(S.attrs.talent+rnd(0,35)>=65)return {text:'你弹了一曲《平沙落雁》。殿里静得只剩弦声。最后一个音落下，太后点了点头，帝王的眼睛一直没离开你。',eff:{favor:12,fame:20}};
+       return {text:'你弹到一半，弦断了一根。殿里有人低低笑了一声。你面不改色地起身谢罪，退回了座位。',eff:{fame:-8,favor:2}};
+     }},
+     {label:'推举他人',hint:'威望 +8 · 好感 +6',run:()=>{
+       const r=pick(RIVALS.filter(x=>x.id!=='xiao'));
+       return {text:`你笑着说：“臣妾近日手生，倒是${r.name}姐姐的琵琶，臣妾听过一次，至今难忘。”太后便点了她。她起身时，看了你一眼。`,eff:{fame:8,bond:{[r.id]:6}}};
+     }},
+     {label:'借口更衣，避开风头',hint:'心机 +3 · 帝宠 -2',run:()=>({
+       text:'你起身退席，在廊下站了很久。殿里的笑声一阵阵传出来，你拢了拢披风。',
+       eff:{scheme:3,favor:-2}
+     })}
+   ]},
+  {id:'war',month:18,kind:'hall',kicker:'主线 · 前朝',title:'边关急报',loc:'养心殿 · 外',
+   body:[
+     '北境战事吃紧，军报一日三封。前朝在吵军饷，后宫也跟着不安起来。',
+     '你父亲从边关递了信进来，只有八个字：家中安好，勿念，勿归。'
+   ],
+   choices:[
+     {label:'捐出积蓄充作军饷',cost:600,hint:'银两 -600 · 威望 +55 · 家族影响 +12',run:()=>({
+       text:'你捐了六百两。银子送出去那天，帝王亲自来你宫里坐了坐，说：“难为你了。”前朝有人记下了你的名字。',
+       eff:{money:-600,fame:55,favor:8,flag:{familyBoost:(S.flags.familyBoost||0)+12}}
+     })},
+     {label:'去佛堂为边军祈福',hint:'威望 +18 · 业障 -6',run:()=>({
+       text:'你在佛堂跪了一夜。第二天，满宫都知道答应娘娘为边军祈福。太后赏了一挂念珠。',
+       eff:{fame:18,karma:-6}
+     })},
+     {label:'什么都不做，先顾自己',hint:'心机 +4 · 威望 -6',run:()=>({
+       text:'你关起宫门，把外面的事都挡在门外。可你知道，前朝的风刮起来，后宫也躲不掉。',
+       eff:{scheme:4,fame:-6}
+     })}
+   ]},
+  {id:'queenill',month:22,cond:()=>S.rank>=3,kind:'hall',who:'xiao',kicker:'主线 · 中宫',title:'皇后病重',loc:'坤宁宫',
+   body:[
+     '皇后病倒了。太医说是积劳成疾，可宫里的人都在传，是有人在她的药里动了手脚。',
+     '坤宁宫的宫门半掩着。按规矩，位分最高的妃嫔要进去侍疾。'
+   ],
+   choices:[
+     {label:'衣不解带，亲自侍疾',hint:'威望 +50 · 皇后好感 +20 · 体质 -6',run:()=>({
+       text:'你在坤宁宫守了七天。皇后醒来时，看见你趴在榻边，愣了很久。她伸手替你拢了拢头发，说：“你也是个苦命人。”',
+       eff:{fame:50,bond:{xiao:20},health:-6,favor:5}
+     })},
+     {label:'借机接管宫务',hint:'威望 +80 · 业障 +10 · 皇后好感 -30',run:()=>({
+       text:'你拿着皇后的印信，把六宫的账册都搬到了自己宫里。皇后醒来后什么都没说，只是从那天起，再没让你进过坤宁宫。',
+       eff:{fame:80,karma:10,bond:{xiao:-30}}
+     })},
+     {label:'静观其变',hint:'心机 +5',run:()=>({
+       text:'你每日遣人问安，送药送汤，却从不踏进坤宁宫。你要看清楚，这场病到底是谁的手笔。',
+       eff:{scheme:5}
+     })}
+   ]}
+];
+
+async function eventNight(report){
+  let ev=null;
+  const fixed=FIXED_EVENTS.find(e=>e.month===S.month&&!S.flags['ev_m'+e.month]&&(!e.cond||e.cond()));
+  if(fixed){
+    ev=fixed;S.flags['ev_m'+fixed.month]=true;
+  }else if(rnd(1,100)<=58){
+    /* 只抽没遭遇过的风波，抽完就过安稳夜，不再重复旧剧情 */
+    const pool=EVENTS.filter(e=>(!e.cond||e.cond())&&!S.flags['ev_'+e.id]);
+    if(pool.length)ev=pick(pool);
+  }
+  if(!ev){
+    report.push('宫中无大事，一夜安眠');
+    return;
+  }
+  S.flags['ev_'+ev.id]=true;
+  S.log.unshift('风波 · '+ev.title);
+  report.push('宫中风波：'+ev.title);
+  await scene({
+    locked:true,kind:ev.kind||'hall',who:ev.who,kicker:ev.kicker,title:ev.title,loc:ev.loc,
+    body:ev.body,choices:ev.choices
+  });
+  save();renderGame();
+}
+
+async function karmaNight(report){
+  const ev=S.flags.evidence||0;
+  if((ev>=2||S.karma>=90)&&rnd(1,100)<=40){
+    S.flags.exposed=true;
+    S.log.unshift('东窗事发');
+    report.push('东窗事发');
+    await scene({
+      locked:true,kind:'hall',kicker:'终局 · 东窗事发',title:'锁宫',loc:'储秀宫',
+      body:[
+        '天还没亮，慎刑司的人就围了你的宫。领头的太监捧着一卷供词，上面按着好几个鲜红的手印。',
+        '“娘娘，跟奴才走一趟吧。”',
+        '你回头看了一眼自己住了许多年的宫室。窗台上那盆兰草，叶子已经黄了。'
+      ],
+      choices:[{label:'认 命'}]
+    });
+    finishGame('expose');
+    return true;
+  }
+  if(S.karma>=40&&rnd(1,100)<=30){
+    const chips=applyEff({health:-4,favor:-3});
+    report.push('夜半惊梦，心神不宁');
+    await scene({
+      locked:true,kind:'night',kicker:'业障反噬',title:'夜半惊梦',loc:'储秀宫 · 寝殿',
+      body:[
+        '你又梦见那些人了。她们站在黑暗里，不说话，只是看着你。',
+        '你惊醒时，枕头湿了一片。窗外有风，吹得宫灯晃来晃去。'
+      ],
+      chips,choices:[{label:'睁 眼 到 天 亮'}]
+    });
+  }
+  return false;
+}
+
+/* ---------- 晋位与结局 ---------- */
+const PROMOTE_TEXT={
+  1:['帝王翻了你的牌子，第二日便下旨，册你为常在。','你从偏殿搬到东厢。屋子并不大多少，可门槛高了一寸。'],
+  2:['你晋了贵人。册封礼上，皇后亲手替你簪了一支金步摇。','她笑得温和，手却按得很重。你低头谢恩，看见自己袖口有一根线头。'],
+  3:['你晋了嫔，成了一宫主位。宫人们改口叫你“娘娘”，声音比从前恭敬得多。','你坐在正殿的椅子上，忽然觉得这椅子有些硬。'],
+  4:['你晋了妃。承乾宫的匾额换了新的，红绸从宫门一直挂到廊下。','帝王来看你，说你这几年变了不少。你笑着问：“是变好了，还是变坏了？”他没有答。'],
+  5:['你晋了贵妃。翊坤宫的金器摆了一屋子，来贺的人踏破了门槛。','夜里人都散了，你一个人坐在镜前，把满头的珠翠一件件摘下来。'],
+  6:['你晋了皇贵妃，摄六宫事。凤印的一半到了你手里，另一半还在皇后那里。','你知道，这已经是最后一步了。再往上，不是晋位，是夺位。'],
+  7:['册后大典。你从丹陛下一步步走上去，满朝命妇俯首。','帝王把凤印放到你手里，说：“往后，这六宫就交给你了。”','你抬起头，看见他眼里映着整座宫城的灯火，却没有映着你。']
+};
+async function promoteCheck(){
+  const n=nextRank();
+  if(!n)return false;
+  if(!(S.fame>=n.fame&&totalBuildLv()>=n.lv&&totalPower()>=n.pw))return false;
+  S.rank++;
+  const r=rankNow();
+  S.log.unshift('晋位 '+r.name);
+  const chips=applyEff({fame:15,favor:5});
+  await scene({
+    locked:true,kind:'hall',who:S.rank>=6?'xiao':null,kicker:'晋位',title:'晋 · '+r.name,loc:r.res,
+    body:(PROMOTE_TEXT[S.rank]||['你晋了位分。宫门换了匾额，宫人换了衣裳，只有宫墙还是那样高。']).slice(),
+    chips,choices:[{label:'谢 恩'}]
+  });
+  if(S.rank>=7){
+    await scene({
+      locked:true,kind:'hall',who:'emperor',kicker:'终章 · 册后',title:'凤印',loc:'坤宁宫',
+      body:[
+        '册后大典的礼乐响了整整一个时辰。你穿着只有皇后才能穿的明黄，走过一道道跪伏的人。',
+        '坤宁宫的门在你身后合上。宫人退尽，你一个人站在殿中央，抬头看着那块“母仪天下”的匾。',
+        '你终于走到了这里。可你忽然想起入宫那年的春天，御花园的桃花开得正好，你站在花树下，还什么都不知道。'
+      ],
+      choices:[{label:'受 册'}]
+    });
+    finishGame('queen');
+    return true;
+  }
+  save();renderGame();
+  return false;
+}
+function calcEnding(){
+  if(S.flags.dead)return 'death';
+  if(S.flags.escape)return 'escape';
+  if(S.karma>=90)return 'white';
+  if(S.karma>=60||S.flags.exposed)return 'cold';
+  if(S.rank>=7){
+    return (S.children>=1&&S.money>=1500&&S.karma<40)?'queen_glory':'queen_lonely';
+  }
+  if(S.rank>=5){
+    if(S.favor>=80)return 'favor';
+    if(S.money>=3000)return 'power';
+    if(S.favor<40)return 'empty';
+    return 'deep';
+  }
+  if(S.rank>=3){
+    if(S.children>=2&&familyPower()>=90&&S.money>=1200)return 'taihou';
+    if(S.children>=1)return 'mother';
+    if(S.money>=2000)return 'goldcage';
+    return 'deep';
+  }
+  if(S.money>=2500)return 'rich';
+  if(familyPower()>=80)return 'clan';
+  if(S.children>=1)return 'mother';
+  return 'dream';
+}
+function finishGame(reason){
+  if(!S||S.ended)return;
+  const id=calcEnding();
+  S.ended=id;
+  const e=ENDINGS.find(x=>x.id===id)||ENDINGS[ENDINGS.length-1];
+  const gal=loadGal();
+  if(gal.endings.indexOf(id)<0)gal.endings.push(id);
+  ACHS.forEach(a=>{try{if(a.cond(S)&&gal.achs.indexOf(a.id)<0)gal.achs.push(a.id)}catch(err){}});
+  saveGal(gal);save();
+  sceneResolve=null;sceneCfg=null;nightLock=false;busy=false;
+  $('scene').hidden=true;$('sheet').hidden=true;
+  renderEnding(e);
+}
+function renderEnding(e){
+  const earned=ACHS.filter(a=>{try{return a.cond(S)}catch(err){return false}});
+  const stats=[
+    ['位分',rankNow().name],['月数','第 '+S.month+' 月'],['银两',fmt(S.money)+' 两'],['子嗣',S.children+' 人'],
+    ['威望',fmt(S.fame)],['业障',S.karma],['家族',familyPower()],['侍寝',S.served+' 次']
+  ];
+  $('ending').innerHTML=`<div class="end-wrap">
+    <div class="end-kicker">夺凤 · 终局</div>
+    <div class="end-seal">${e.glyph}</div>
+    <div class="end-title">${e.title}</div>
+    <div class="end-sub">${e.sub}</div>
+    <div class="end-body">${e.body.split('\n').map(p=>`<p>${p}</p>`).join('')}</div>
+    <div class="end-stats">${stats.map(([k,v])=>`<div class="end-stat"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
+    <div class="end-ach">${earned.length?earned.map(a=>`<span>${a.name}</span>`).join(''):'<span style="opacity:.4">本局无成就</span>'}</div>
+    <div class="end-btns">
+      <button class="btn-main" data-end="restart">再 开 一 局</button>
+      <button class="btn-main ghost" data-end="gallery">翻 开 图 鉴</button>
+    </div>
+    <div class="end-foot">夺凤 · 六宫升位录 · 第 ${S.month} 月</div>
+  </div>`;
+  $('ending').hidden=false;
+  $('ending').scrollTop=0;
+}
+async function escapeNow(){
+  if(busy||!S||!S.flags.escapeDeal)return;
+  if(!confirm('今夜就走？出宫之后，宫中一切归零。'))return;
+  busy=true;
+  closeSheet();
+  await scene({
+    locked:true,kind:'cold',who:'banmian',kicker:'终局 · 远遁',title:'宫门开了一条缝',loc:'冷宫 · 西角门',
+    body:[
+      '你穿着最不起眼的衣裳，把半枚钥匙塞进锁孔。锁芯“咔”地一声，像骨头错位。',
+      '半面郎君站在门外，手里提着一盏没有点亮的灯。他看了你一眼，说：“想好了？”',
+      '你没有回头。身后的宫城在夜色里像一头睡着的巨兽。'
+    ],
+    choices:[{label:'跨 出 去',run:()=>({
+      text:'你跨过门槛。门在身后缓缓合上，没有发出一点声音。',
+      eff:{flag:{escape:true}}
+    })}]
+  });
+  finishGame('escape');
+}
+function showMonthSummary(report){
+  openSheet(`<div class="sh-title">第 ${S.month-1} 月 · 月结</div>
+    <div class="sh-sub">${rankNow().name} · ${rankNow().res} · 银两 ${fmt(S.money)}</div>
+    <div class="sh-hair"></div>
+    ${report.map(t=>`<div class="log-item"><span>·</span><div>${esc(t)}</div></div>`).join('')}
+    <div class="sh-hair" style="margin-top:10px"></div>
+    <div class="sh-sub">下月行动力已恢复至 5 点。</div>
+    <button class="btn-main" data-menu="close" style="margin-top:16px;height:48px;font-size:15px">继 续</button>`, 'dlg');
+}
+function monthlyDrift(report){
+  S.favor=clamp(S.favor-1,0,100);
+  if(S.flags.curse){
+    S.favor=clamp(S.favor-2,0,100);
+    S.karma=clamp(S.karma+1,0,100);
+  }
+  if(S.flags.loveGu)S.favor=clamp(S.favor-1,0,100);
+  RIVALS.forEach(r=>{
+    S.rivals[r.id].favor=clamp(S.rivals[r.id].favor+rnd(0,3),0,100);
+  });
+  const allies=Object.keys(S.bonds).filter(id=>S.bonds[id]>=60);
+  if(allies.length){
+    const gain=allies.length*2;
+    S.fame+=gain;
+    report.push(`盟友相助，威望 +${gain}`);
+  }
+  if(hasRetainer('cui')){
+    S.fame+=2;
+    report.push('崔姑姑替你在六宫周旋，威望 +2');
+  }
+  S.log=S.log.slice(0,40);
+}
+
+/* ---------- 开场与事件绑定 ---------- */
+function initPetals(){
+  const cv=$('petals');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let W=0,H=0;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  function resize(){
+    W=cv.clientWidth||window.innerWidth;
+    H=cv.clientHeight||window.innerHeight;
+    cv.width=W*dpr;cv.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();
+  window.addEventListener('resize',resize);
+  const ps=Array.from({length:24},()=>({
+    x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.1,
+    s:.12+Math.random()*.35,d:Math.random()*.3-.15,a:.12+Math.random()*.3,
+    rot:Math.random()*Math.PI,t:Math.random()*100
+  }));
+  let last=performance.now();
+  function frame(now){
+    const dt=Math.min(48,now-last);last=now;
+    ctx.clearRect(0,0,W,H);
+    for(const p of ps){
+      p.y+=p.s*dt*.05;
+      p.x+=Math.sin((now+p.t*1000)/3200)*.12+p.d*.02;
+      p.rot+=.0004*dt;
+      if(p.y>H+12){p.y=-12;p.x=Math.random()*W}
+      if(p.x<-12)p.x=W+12;if(p.x>W+12)p.x=-12;
+      ctx.save();
+      ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillStyle=`rgba(214,154,132,${p.a})`;
+      ctx.beginPath();ctx.ellipse(0,0,p.r*1.5,p.r*.55,0,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function init(){
+  initPetals();
+  if(ART.boot&&$('bootArt')&&typeof Image!=='undefined'){
+    const im=new Image();
+    im.onload=()=>{
+      $('bootArt').style.background='#050404 url("'+ART.boot+'") center 20%/cover no-repeat';
+      $('bootArt').querySelectorAll('svg,.moon,.lantern').forEach(x=>{x.style.display='none'});
+    };
+    im.src=ART.boot;
+  }
+  /* 首屏先出，其余插画空闲时再预热解码，缩短打开时间 */
+  const warm=()=>{
+    Object.keys(FAM_ART).forEach(k=>{
+      const s=FAM_ART[k];
+      if(!s)return;
+      const im=new Image();
+      im.src=s;
+      if(im.decode)im.decode().catch(()=>{});
+    });
+    Object.keys(FAM_FACE).forEach(k=>{
+      const s=FAM_FACE[k];
+      if(!s)return;
+      const im=new Image();
+      im.src=s;
+      if(im.decode)im.decode().catch(()=>{});
+    });
+    [typeof HAN_RANK_ART!=='undefined'?HAN_RANK_ART:[],typeof SHU_RANK_ART!=='undefined'?SHU_RANK_ART:[],typeof SHANG_RANK_ART!=='undefined'?SHANG_RANK_ART:[]].forEach(arr=>arr.forEach(s=>{
+      if(!s)return;
+      const im=new Image();
+      im.src=s;
+      if(im.decode)im.decode().catch(()=>{});
+    }));
+  };
+  if(window.requestIdleCallback)requestIdleCallback(warm,{timeout:900});else setTimeout(warm,150);
+  const saved=loadSave();
+  if(saved&&!saved.ended)$('btnContinue').hidden=false;
+
+  $('btnStart').onclick=()=>{
+    const name=($('nameInput').value||'').trim();
+    if(!name){showToast('请先留下闺名');$('nameInput').focus();return}
+    if(saved&&!saved.ended&&!confirm('已有旧存档，入局将覆盖它。确定吗？'))return;
+    $('boot').hidden=true;$('create').hidden=false;
+    sel={familyId:null,attrs:null,scheme:0,rerolls:3};
+    renderCreate();
+  };
+  $('btnContinue').onclick=()=>{
+    const s=loadSave();
+    if(!s){showToast('没有找到存档');return}
+    if(!s.attrs)s.attrs={family:40,charm:50,health:50,wit:50,talent:50,social:50};
+    ['fame','money','favor','karma','scheme','children','served','month','ap','rank'].forEach(k=>{
+      if(!isFinite(s[k]))s[k]=k==='scheme'?20:0;
+    });
+    S=s;busy=false;nightLock=false;
+    $('boot').hidden=true;$('create').hidden=true;$('game').hidden=false;
+    renderGame();
+    showToast('已续前缘');
+  };
+  $('btnGallery').onclick=showGallery;
+  $('btnHelp').onclick=showHelp;
+  $('btnBackBoot').onclick=()=>{$('create').hidden=true;$('boot').hidden=false};
+  $('btnCreate').onclick=()=>{
+    if(!sel.familyId){showToast('请先择一身世');return}
+    startGame();
+  };
+  $('btnRoll').onclick=()=>{
+    if(sel.rerolls<=0||!sel.familyId)return;
+    sel.rerolls--;
+    const f=FAMILIES.find(x=>x.id===sel.familyId);
+    sel.attrs=rollAttrs(f);
+    sel.scheme=clamp(rnd(10,26)+Math.floor(sel.attrs.wit/22),8,42);
+    renderCreate();
+  };
+  $('nameInput').oninput=()=>{
+    if(!$('create').hidden)$('crName').textContent=($('nameInput').value||'待定').trim()||'待定';
+  };
+  $('btnMenu').onclick=openMenu;
+  $('fabNight').onclick=nightfall;
+  document.querySelectorAll('.tab').forEach(b=>{b.onclick=()=>setTab(b.dataset.tab)});
+
+  $('main').addEventListener('click',e=>{
+    const place=e.target.closest('[data-place]');
+    if(place){askPlace(place.dataset.place);return}
+    const up=e.target.closest('[data-bld-up]');
+    if(up){upgradeBuilding(up.dataset.bldUp);return}
+    const as=e.target.closest('[data-bld-assign]');
+    if(as){openAssign(as.dataset.bldAssign);return}
+    const rv=e.target.closest('[data-rival]');
+    if(rv){openSchemeSheet(rv.dataset.rival);return}
+    const gf=e.target.closest('[data-gift]');
+    if(gf){giftRival(gf.dataset.gift);return}
+    const rc=e.target.closest('[data-recruit]');
+    if(rc){recruit(rc.dataset.recruit);return}
+    const it=e.target.closest('[data-use-item]');
+    if(it){useItem(it.dataset.useItem);return}
+    if(e.target.closest('[data-gallery]')){showGallery();return}
+    if(e.target.closest('[data-escape]')){escapeNow();return}
+  });
+
+  $('ending').addEventListener('click',e=>{
+    const b=e.target.closest('[data-end]');
+    if(!b)return;
+    if(b.dataset.end==='restart'){
+      if(confirm('再开一局？本局进度将清空，结局图鉴保留。')){
+        try{localStorage.removeItem(SAVE_KEY)}catch(err){}
+        location.reload();
+      }
+    }else if(b.dataset.end==='gallery')showGallery();
+  });
+
+  $('nameInput').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();$('btnStart').click()}
+  });
+}
+async function introScene(){
+  await scene({
+    kind:'hall',kicker:'第一章 · 入宫',title:'一入宫门深似海',
+    loc:'紫禁城 · 神武门',ch:'承平二十一年 · 春',
+    body:[
+      '你随引路的嬷嬷穿过一道又一道门。身后的宫门在黄昏里合拢，声音闷得像一声叹息。',
+      `按例，你被册为<span class="em">答应</span>，居储秀宫偏殿。父亲托人递进来的银子，打点完各处，只剩 ${fmt(S.money)} 两。`,
+      '这宫里，位分是明面上的梯子：<span class="em">答应、常在、贵人、嫔、妃、贵妃、皇贵妃、皇后</span>。可梯子下面垫着什么，没人会告诉你。'
+    ],
+    note:'每月五点行动力 · 位分晋升需同时满足威望、产业、门客三项',
+    choices:[
+      {label:'把银子收好，先看清这盘棋',hint:'威望 +5 · 心机 +3',run:()=>{
+        S.fame+=5;S.scheme=clamp(S.scheme+3,0,100);
+        return '你把最后一点银子缝进枕底。窗外的宫灯次第亮起来，像一双双不动声色的眼睛。';
+      }},
+      {label:'先给掌事嬷嬷塞个红包',hint:'银两 -60 · 威望 +12',run:()=>{
+        if(S.money<60){S.money=0;S.fame+=4;return '你的荷包太轻，嬷嬷掂了掂，笑了一声便走了。你只记住了那张脸。';}
+        S.money-=60;S.fame+=12;S.log.unshift('入宫打点掌事嬷嬷');
+        return '嬷嬷掂了掂荷包，脸上的褶子立刻舒展开来。她提点了你两句：这宫里，最要紧的是别站错队。';
+      }}
+    ]
+  });
+  save();renderGame();
+}
+init();
+
+</script>
+<script>
+/* 标注模式：网址后加 #pick 开启，点任意板块即在底部显示它的标识，方便沟通改版 */
+(function(){
+  if(!/pick/i.test(location.hash))return;
+  var st=document.createElement('style');
+  st.textContent='.pk-hl{outline:2px dashed #c9a86a!important;outline-offset:-2px!important}'
+    +'.pk-bar{position:fixed;left:0;right:0;bottom:0;z-index:99999;padding:10px 14px 12px;'
+    +'background:rgba(8,12,9,.97);border-top:1px solid rgba(201,168,106,.55);color:#f0dcae;'
+    +'font:12px/1.65 "PingFang SC","Microsoft YaHei",sans-serif;box-shadow:0 -12px 30px rgba(0,0,0,.6)}'
+    +'.pk-bar b{display:block;color:#fff;font-size:13px;word-break:break-all}'
+    +'.pk-bar i{display:block;font-style:normal;color:#93a196;font-size:11px;margin-top:2px;word-break:break-all}'
+    +'.pk-bar .pk-act{display:flex;gap:8px;margin-top:8px}'
+    +'.pk-bar button{padding:5px 12px;border:1px solid rgba(201,168,106,.5);color:#f0dcae;'
+    +'background:rgba(201,168,106,.1);font-size:11px;letter-spacing:.08em}';
+  document.head.appendChild(st);
+  var bar=document.createElement('div');
+  bar.className='pk-bar';
+  bar.innerHTML='<b>标注模式 · 点一下要改的板块</b><i>底部会显示它的标识与尺寸，把这行字告诉我即可</i>';
+  var cur=null;
+  function copyText(t){
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).catch(function(){});return}
+    var ta=document.createElement('textarea');
+    ta.value=t;ta.style.cssText='position:fixed;top:-999px;opacity:0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy')}catch(e){}
+    ta.remove();
+  }
+  document.addEventListener('click',function(e){
+    if(bar.contains(e.target))return;
+    e.preventDefault();e.stopPropagation();
+    if(cur)cur.classList.remove('pk-hl');
+    cur=e.target;cur.classList.add('pk-hl');
+    var path=[],n=cur;
+    for(var i=0;i<4&&n&&n!==document.body;i++){
+      var s=n.tagName.toLowerCase();
+      if(n.id)s+='#'+n.id;
+      else if(typeof n.className==='string'&&n.className.trim())s+='.'+n.className.trim().split(/\s+/).slice(0,3).join('.');
+      path.unshift(s);n=n.parentElement;
+    }
+    var txt=(cur.innerText||cur.getAttribute('alt')||'').replace(/\s+/g,' ').trim().slice(0,28);
+    var r=cur.getBoundingClientRect();
+    var id=path.join(' > ');
+    var info='内容：'+(txt||'（无文字）')+' ｜ 尺寸 '+Math.round(r.width)+'×'+Math.round(r.height);
+    bar.innerHTML='<b>'+id+'</b><i>'+info+'</i><div class="pk-act"><button data-a="c">复制标识</button><button data-a="x">退出标注</button></div>';
+    bar.querySelector('[data-a=c]').onclick=function(){copyText(id+' | '+info);this.textContent='已复制'};
+    bar.querySelector('[data-a=x]').onclick=function(){
+      if(cur)cur.classList.remove('pk-hl');
+      bar.remove();st.remove();
+      history.replaceState(null,'',location.pathname);
+    };
+  },true);
+  (function mount(){document.body?document.body.appendChild(bar):document.addEventListener('DOMContentLoaded',mount)})();
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
